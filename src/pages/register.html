@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — CookLog</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body class="bg-body-tertiary">
+    <div id="navbar"></div>
+
+    <main class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-sm-5">
+              <div class="text-center mb-4">
+                <i class="bi bi-egg-fried text-primary" style="font-size: 2.5rem;"></i>
+                <h1 class="h3 mt-2 mb-1">Create your account</h1>
+                <p class="text-secondary mb-0">Start tracking your recipes with CookLog.</p>
+              </div>
+
+              <div id="formAlert" class="alert d-none" role="alert"></div>
+
+              <form id="registerForm" novalidate>
+                <div class="mb-3">
+                  <label for="fullName" class="form-label">Full name</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="fullName"
+                      name="fullName"
+                      placeholder="Jane Doe"
+                      required
+                      minlength="2"
+                      autocomplete="name"
+                    />
+                    <div class="invalid-feedback">Please enter your name (at least 2 characters).</div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email address</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                    <input
+                      type="email"
+                      class="form-control"
+                      id="email"
+                      name="email"
+                      placeholder="you@example.com"
+                      required
+                      autocomplete="email"
+                    />
+                    <div class="invalid-feedback">Please enter a valid email address.</div>
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="password" class="form-label">Password</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    <input
+                      type="password"
+                      class="form-control"
+                      id="password"
+                      name="password"
+                      placeholder="At least 6 characters"
+                      required
+                      minlength="6"
+                      autocomplete="new-password"
+                    />
+                    <button
+                      class="btn btn-outline-secondary"
+                      type="button"
+                      id="togglePassword"
+                      tabindex="-1"
+                      aria-label="Show password"
+                    >
+                      <i class="bi bi-eye"></i>
+                    </button>
+                    <div class="invalid-feedback">Password must be at least 6 characters.</div>
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2" id="submitBtn">
+                  <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                  <span id="submitLabel"><i class="bi bi-person-plus"></i> Create account</span>
+                </button>
+              </form>
+
+              <p class="text-center text-secondary mt-4 mb-0">
+                Already have an account?
+                <a href="/src/pages/login.html" class="text-decoration-none">Log in</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script type="module">
+      import 'bootstrap/dist/css/bootstrap.min.css'
+      import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+      import { initNavbar } from '/src/components/navbar.js'
+      import { signUp } from '/src/services/auth.js'
+
+      initNavbar('#navbar')
+
+      const form = document.getElementById('registerForm')
+      const alertBox = document.getElementById('formAlert')
+      const submitBtn = document.getElementById('submitBtn')
+      const spinner = document.getElementById('submitSpinner')
+      const toggleBtn = document.getElementById('togglePassword')
+      const passwordInput = document.getElementById('password')
+
+      toggleBtn.addEventListener('click', () => {
+        const isPw = passwordInput.type === 'password'
+        passwordInput.type = isPw ? 'text' : 'password'
+        toggleBtn.querySelector('i').className = isPw ? 'bi bi-eye-slash' : 'bi bi-eye'
+      })
+
+      function showAlert(type, message) {
+        alertBox.className = `alert alert-${type}`
+        alertBox.textContent = message
+      }
+
+      function setLoading(loading) {
+        submitBtn.disabled = loading
+        spinner.classList.toggle('d-none', !loading)
+      }
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault()
+        alertBox.className = 'alert d-none'
+
+        if (!form.checkValidity()) {
+          form.classList.add('was-validated')
+          return
+        }
+
+        setLoading(true)
+        try {
+          const data = await signUp({
+            fullName: form.fullName.value.trim(),
+            email: form.email.value.trim(),
+            password: form.password.value,
+          })
+
+          if (data.session) {
+            // Signed in immediately — go to recipes.
+            window.location.href = '/'
+          } else {
+            // Email confirmation required.
+            form.classList.remove('was-validated')
+            form.reset()
+            showAlert(
+              'success',
+              'Account created! Please check your email to confirm your address, then log in.'
+            )
+          }
+        } catch (err) {
+          showAlert('danger', err?.message || 'Something went wrong. Please try again.')
+        } finally {
+          setLoading(false)
+        }
+      })
+    </script>
+  </body>
+</html>
