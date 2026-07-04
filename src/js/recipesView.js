@@ -1,7 +1,7 @@
 // Pure UI rendering helpers for the recipes listing page.
 // These functions only build markup from data — no data fetching here.
 
-const DETAIL_URL = '/src/pages/recipe.html'
+const DETAIL_URL = '/src/pages/recipe-detail.html'
 
 function escapeHtml(value) {
   return String(value ?? '')

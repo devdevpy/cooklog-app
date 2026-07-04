@@ -1,9 +1,20 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { Modal } from 'bootstrap'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
-import { getRecipeById } from '../services/recipes.js'
-import { supabase } from '../js/supabaseClient.js'
+import { getUser, isAdmin } from '../services/auth.js'
+import { getRecipeWithDetails, deleteRecipe } from '../services/recipes.js'
+import { deleteRecipeImage } from '../services/storage.js'
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 
 async function loadRecipe() {
   const params = new URLSearchParams(window.location.search)
@@ -15,91 +26,115 @@ async function loadRecipe() {
   }
 
   try {
-    const recipe = await getRecipeById(recipeId)
+    const { recipe, ingredients, steps } = await getRecipeWithDetails(recipeId)
 
-    const { data: ingredients } = await supabase
-      .from('ingredients')
-      .select('*')
-      .eq('recipe_id', recipeId)
-      .order('id')
+    const user = await getUser()
+    const isOwner = !!user && user.id === recipe.user_id
+    const admin = !isOwner && user ? await isAdmin() : false
+    const canManage = isOwner || admin
 
-    const { data: steps } = await supabase
-      .from('recipe_steps')
-      .select('*')
-      .eq('recipe_id', recipeId)
-      .order('step_number')
+    renderRecipe(recipe, ingredients, steps, { canManage })
 
-    renderRecipe(recipe, ingredients || [], steps || [])
+    if (canManage) {
+      wireManagementActions(recipe)
+    }
   } catch (error) {
     console.error('Failed to load recipe:', error)
     showError('Failed to load recipe. Please try again.')
   }
 }
 
-function renderRecipe(recipe, ingredients, steps) {
+function renderRecipe(recipe, ingredients, steps, { canManage }) {
   const container = document.getElementById('recipeContent')
-  
+
   const categoryName = recipe.categories?.name || 'Uncategorized'
   const authorName = recipe.author?.full_name || 'Unknown'
   const imageHtml = recipe.image_url
-    ? `<img src="${recipe.image_url}" alt="${recipe.title}" class="img-fluid rounded mb-4" style="max-height: 400px; width: 100%; object-fit: cover;">`
+    ? `<img src="${escapeHtml(recipe.image_url)}" alt="${escapeHtml(recipe.title)}"
+         class="img-fluid rounded mb-4"
+         style="max-height: 400px; width: 100%; object-fit: cover;">`
     : ''
 
-  const ingredientsHtml = ingredients.length > 0
-    ? ingredients.map(ing => `
+  const ingredientsHtml =
+    ingredients.length > 0
+      ? ingredients
+          .map(
+            (ing) => `
         <li class="mb-2">
-          <strong>${ing.amount} ${ing.unit}</strong> ${ing.name}
-        </li>
-      `).join('')
-    : '<li class="text-muted">No ingredients listed</li>'
+          <strong>${escapeHtml(ing.amount)} ${escapeHtml(ing.unit)}</strong>
+          ${escapeHtml(ing.name)}
+        </li>`
+          )
+          .join('')
+      : '<li class="text-muted">No ingredients listed</li>'
 
-  const stepsHtml = steps.length > 0
-    ? steps.map(step => `
+  const stepsHtml =
+    steps.length > 0
+      ? steps
+          .map(
+            (step) => `
         <div class="d-flex gap-3 mb-3">
           <div class="flex-shrink-0">
-            <span class="badge bg-primary rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+            <span class="badge bg-primary rounded-circle"
+              style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
               ${step.step_number}
             </span>
           </div>
           <div class="flex-grow-1">
-            <p class="mb-0">${step.instruction}</p>
+            <p class="mb-0">${escapeHtml(step.description)}</p>
           </div>
-        </div>
-      `).join('')
-    : '<p class="text-muted">No instructions provided</p>'
+        </div>`
+          )
+          .join('')
+      : '<p class="text-muted">No instructions provided</p>'
+
+  const manageBar = canManage
+    ? `
+      <div class="d-flex gap-2 mb-3">
+        <a id="editRecipeBtn" href="/src/pages/edit-recipe.html?id=${escapeHtml(recipe.id)}"
+           class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-pencil me-1"></i> Edit
+        </a>
+        <button type="button" id="deleteRecipeBtn" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-trash me-1"></i> Delete
+        </button>
+      </div>`
+    : ''
 
   container.innerHTML = `
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10 col-xl-8">
-        <div class="mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-3">
           <a href="/" class="text-decoration-none">
             <i class="bi bi-arrow-left me-1"></i> Back to recipes
           </a>
         </div>
 
+        ${manageBar}
+
         <div class="card border-0 shadow-sm">
           <div class="card-body p-4">
             ${imageHtml}
-            
+
             <div class="mb-3">
-              <span class="badge bg-primary-subtle text-primary">${categoryName}</span>
+              <span class="badge bg-primary-subtle text-primary">${escapeHtml(categoryName)}</span>
             </div>
 
-            <h1 class="h2 mb-3">${recipe.title}</h1>
-            <p class="text-secondary mb-4">${recipe.description}</p>
+            <h1 class="h2 mb-3">${escapeHtml(recipe.title)}</h1>
+            <p class="text-secondary mb-4">${escapeHtml(recipe.description || '')}</p>
 
-            <div class="d-flex gap-4 mb-4 text-secondary">
+            <div class="d-flex gap-4 mb-4 text-secondary flex-wrap">
               <div>
                 <i class="bi bi-clock me-1"></i>
                 <span>${recipe.prep_time || 0} min</span>
               </div>
               <div>
                 <i class="bi bi-people me-1"></i>
-                <span>${recipe.servings} servings</span>
+                <span>${recipe.servings || 0} servings</span>
               </div>
               <div>
                 <i class="bi bi-person me-1"></i>
-                <span>${authorName}</span>
+                <span>${escapeHtml(authorName)}</span>
               </div>
             </div>
 
@@ -127,12 +162,47 @@ function renderRecipe(recipe, ingredients, steps) {
   `
 }
 
+function wireManagementActions(recipe) {
+  const deleteBtn = document.getElementById('deleteRecipeBtn')
+  if (!deleteBtn) return
+
+  const modalEl = document.getElementById('deleteRecipeModal')
+  const modal = Modal.getOrCreateInstance(modalEl)
+  const confirmBtn = document.getElementById('confirmDeleteBtn')
+  const titleEl = document.getElementById('deleteRecipeTitle')
+
+  deleteBtn.addEventListener('click', () => {
+    titleEl.textContent = recipe.title
+    modal.show()
+  })
+
+  confirmBtn.addEventListener('click', async () => {
+    confirmBtn.disabled = true
+    confirmBtn.innerHTML = `
+      <span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+      Deleting...
+    `
+    try {
+      const { imageUrl } = await deleteRecipe(recipe.id)
+      if (imageUrl) {
+        await deleteRecipeImage(imageUrl)
+      }
+      window.location.href = '/'
+    } catch (error) {
+      console.error('Failed to delete recipe:', error)
+      alert(`Error: ${error.message || 'Failed to delete recipe.'}`)
+      confirmBtn.disabled = false
+      confirmBtn.innerHTML = `<i class="bi bi-trash me-1"></i> Delete`
+    }
+  })
+}
+
 function showError(message) {
   const container = document.getElementById('recipeContent')
   container.innerHTML = `
     <div class="alert alert-danger" role="alert">
       <i class="bi bi-exclamation-triangle me-2"></i>
-      ${message}
+      ${escapeHtml(message)}
     </div>
     <div class="text-center">
       <a href="/" class="btn btn-primary">

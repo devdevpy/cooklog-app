@@ -61,3 +61,24 @@ export async function getUser() {
   } = await supabase.auth.getUser()
   return user
 }
+
+/**
+ * Check whether the currently authenticated user has the `admin` role.
+ * Returns false when there is no session or when the row is missing.
+ */
+export async function isAdmin() {
+  const user = await getUser()
+  if (!user) return false
+
+  const { data, error } = await supabase
+    .from('user_roles')
+    .select('role')
+    .eq('user_id', user.id)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load user role:', error)
+    return false
+  }
+  return data?.role === 'admin'
+}

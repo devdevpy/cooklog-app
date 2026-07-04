@@ -2,6 +2,7 @@ import { supabase } from '../js/supabaseClient.js'
 
 const RECIPE_SELECT = `
   id,
+  user_id,
   title,
   description,
   image_url,
@@ -57,7 +58,7 @@ export async function getRecipeById(id) {
  * @param {string} recipeData.imageUrl
  * @param {string} recipeData.authorId
  * @param {Array<{name: string, amount: string, unit: string}>} ingredients
- * @param {Array<{step_number: number, instruction: string}>} steps
+ * @param {Array<{step_number: number, description: string}>} steps
  * @returns {Promise<{id: string}>} The created recipe
  */
 export async function createRecipe(recipeData, ingredients, steps) {
@@ -71,7 +72,7 @@ export async function createRecipe(recipeData, ingredients, steps) {
       cook_time: 0,
       servings: recipeData.servings,
       image_url: recipeData.imageUrl,
-      author: recipeData.authorId,
+      user_id: recipeData.authorId,
     })
     .select('id')
     .single()
@@ -99,7 +100,7 @@ export async function createRecipe(recipeData, ingredients, steps) {
     const stepsData = steps.map((step) => ({
       recipe_id: recipe.id,
       step_number: step.step_number,
-      instruction: step.instruction,
+      description: step.description,
     }))
 
     const { error: stepsError } = await supabase
@@ -112,4 +113,109 @@ export async function createRecipe(recipeData, ingredients, steps) {
   }
 
   return recipe
+}
+
+/**
+ * Fetch a recipe together with its ingredients and steps.
+ * Useful for the detail and edit pages.
+ */
+export async function getRecipeWithDetails(id) {
+  const recipe = await getRecipeById(id)
+
+  const [{ data: ingredients }, { data: steps }] = await Promise.all([
+    supabase.from('ingredients').select('*').eq('recipe_id', id).order('id'),
+    supabase
+      .from('recipe_steps')
+      .select('*')
+      .eq('recipe_id', id)
+      .order('step_number'),
+  ])
+
+  return {
+    recipe,
+    ingredients: ingredients ?? [],
+    steps: steps ?? [],
+  }
+}
+
+/**
+ * Update an existing recipe and reconcile its ingredients / steps.
+ * Simplest safe approach: delete existing children and re-insert the new lists.
+ * RLS ensures only the owner or an admin can perform this.
+ */
+export async function updateRecipe(recipeId, recipeData, ingredients, steps) {
+  const updatePayload = {
+    title: recipeData.title,
+    description: recipeData.description,
+    category_id: recipeData.categoryId,
+    prep_time: recipeData.timeMinutes,
+    servings: recipeData.servings,
+    updated_at: new Date().toISOString(),
+  }
+  if (recipeData.imageUrl !== undefined) {
+    updatePayload.image_url = recipeData.imageUrl
+  }
+
+  const { error: updateError } = await supabase
+    .from('recipes')
+    .update(updatePayload)
+    .eq('id', recipeId)
+
+  if (updateError) throw updateError
+
+  const { error: delIngErr } = await supabase
+    .from('ingredients')
+    .delete()
+    .eq('recipe_id', recipeId)
+  if (delIngErr) throw new Error(`Failed to clear ingredients: ${delIngErr.message}`)
+
+  const { error: delStepsErr } = await supabase
+    .from('recipe_steps')
+    .delete()
+    .eq('recipe_id', recipeId)
+  if (delStepsErr) throw new Error(`Failed to clear steps: ${delStepsErr.message}`)
+
+  if (ingredients && ingredients.length > 0) {
+    const { error: ingErr } = await supabase.from('ingredients').insert(
+      ingredients.map((ing) => ({
+        recipe_id: recipeId,
+        name: ing.name,
+        amount: ing.amount,
+        unit: ing.unit,
+      }))
+    )
+    if (ingErr) throw new Error(`Failed to add ingredients: ${ingErr.message}`)
+  }
+
+  if (steps && steps.length > 0) {
+    const { error: stepsErr } = await supabase.from('recipe_steps').insert(
+      steps.map((step) => ({
+        recipe_id: recipeId,
+        step_number: step.step_number,
+        description: step.description,
+      }))
+    )
+    if (stepsErr) throw new Error(`Failed to add steps: ${stepsErr.message}`)
+  }
+
+  return { id: recipeId }
+}
+
+/**
+ * Delete a recipe by id. Ingredients / steps are removed via ON DELETE CASCADE.
+ * Returns the deleted recipe's image_url so the caller can clean up storage.
+ */
+export async function deleteRecipe(recipeId) {
+  const { data: existing, error: fetchError } = await supabase
+    .from('recipes')
+    .select('image_url')
+    .eq('id', recipeId)
+    .single()
+
+  if (fetchError) throw fetchError
+
+  const { error } = await supabase.from('recipes').delete().eq('id', recipeId)
+  if (error) throw error
+
+  return { imageUrl: existing?.image_url ?? null }
 }
