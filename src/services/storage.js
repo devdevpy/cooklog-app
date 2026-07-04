@@ -35,10 +35,11 @@ export async function uploadRecipeImage(file, userId) {
 
 /**
  * Delete an image from the recipe-images bucket.
+ * Authorisation is enforced by Storage RLS policies (owner or admin);
+ * the client only extracts the file path from the public URL.
  * @param {string} imageUrl - The public URL of the image to delete
- * @param {string} userId - The authenticated user's ID (for path verification)
  */
-export async function deleteRecipeImage(imageUrl, userId) {
+export async function deleteRecipeImage(imageUrl) {
   if (!imageUrl) return
 
   try {
@@ -48,15 +49,12 @@ export async function deleteRecipeImage(imageUrl, userId) {
     if (bucketIndex === -1) return
 
     const filePath = pathParts.slice(bucketIndex + 1).join('/')
-    
-    if (!filePath.startsWith(`${userId}/`)) {
-      throw new Error('Unauthorized: Cannot delete files from other users')
-    }
+    if (!filePath) return
 
     const { error } = await supabase.storage.from(BUCKET_NAME).remove([filePath])
     if (error) throw error
   } catch (err) {
     console.error('Failed to delete image:', err)
-    throw err
+    // Not fatal for the caller — recipe row deletion is the primary concern.
   }
 }

@@ -24,6 +24,45 @@
       </div>
     </main>
 
+    <div
+      class="modal fade"
+      id="deleteRecipeModal"
+      tabindex="-1"
+      aria-labelledby="deleteRecipeModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="deleteRecipeModalLabel">
+              <i class="bi bi-exclamation-triangle text-danger me-2"></i>Delete recipe?
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">
+              Are you sure you want to delete
+              <strong id="deleteRecipeTitle">this recipe</strong>?
+              This action cannot be undone.
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+              Cancel
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+              <i class="bi bi-trash me-1"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="/src/pages/recipe-detail.js"></script>
   </body>
 </html>
