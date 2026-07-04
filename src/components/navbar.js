@@ -5,6 +5,7 @@ const ROUTES = {
   home: '/',
   login: '/src/pages/login.html',
   register: '/src/pages/register.html',
+  addRecipe: '/src/pages/add-recipe.html',
 }
 
 function displayName(user) {
@@ -53,6 +54,11 @@ function loggedInMenu(user) {
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.home}">
         <i class="bi bi-journal-richtext"></i> My Recipes
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.addRecipe}">
+        <i class="bi bi-plus-circle"></i> Add Recipe
       </a>
     </li>
     <li class="nav-item d-flex align-items-center text-secondary px-lg-2 py-2 py-lg-0">
