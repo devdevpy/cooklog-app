@@ -45,3 +45,71 @@ export async function getRecipeById(id) {
   if (error) throw error
   return data
 }
+
+/**
+ * Create a new recipe with ingredients and steps.
+ * @param {Object} recipeData - Recipe information
+ * @param {string} recipeData.title
+ * @param {string} recipeData.description
+ * @param {string} recipeData.categoryId
+ * @param {number} recipeData.timeMinutes
+ * @param {number} recipeData.servings
+ * @param {string} recipeData.imageUrl
+ * @param {string} recipeData.authorId
+ * @param {Array<{name: string, amount: string, unit: string}>} ingredients
+ * @param {Array<{step_number: number, instruction: string}>} steps
+ * @returns {Promise<{id: string}>} The created recipe
+ */
+export async function createRecipe(recipeData, ingredients, steps) {
+  const { data: recipe, error: recipeError } = await supabase
+    .from('recipes')
+    .insert({
+      title: recipeData.title,
+      description: recipeData.description,
+      category_id: recipeData.categoryId,
+      prep_time: recipeData.timeMinutes,
+      cook_time: 0,
+      servings: recipeData.servings,
+      image_url: recipeData.imageUrl,
+      author: recipeData.authorId,
+    })
+    .select('id')
+    .single()
+
+  if (recipeError) throw recipeError
+
+  if (ingredients && ingredients.length > 0) {
+    const ingredientsData = ingredients.map((ing) => ({
+      recipe_id: recipe.id,
+      name: ing.name,
+      amount: ing.amount,
+      unit: ing.unit,
+    }))
+
+    const { error: ingredientsError } = await supabase
+      .from('ingredients')
+      .insert(ingredientsData)
+
+    if (ingredientsError) {
+      throw new Error(`Failed to add ingredients: ${ingredientsError.message}`)
+    }
+  }
+
+  if (steps && steps.length > 0) {
+    const stepsData = steps.map((step) => ({
+      recipe_id: recipe.id,
+      step_number: step.step_number,
+      instruction: step.instruction,
+    }))
+
+    const { error: stepsError } = await supabase
+      .from('recipe_steps')
+      .insert(stepsData)
+
+    if (stepsError) {
+      throw new Error(`Failed to add steps: ${stepsError.message}`)
+    }
+  }
+
+  return recipe
+}
