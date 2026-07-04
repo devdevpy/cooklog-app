@@ -62,7 +62,7 @@ function renderRecipe(recipe, ingredients, steps) {
             </span>
           </div>
           <div class="flex-grow-1">
-            <p class="mb-0">${step.instruction}</p>
+            <p class="mb-0">${step.description}</p>
           </div>
         </div>
       `).join('')

@@ -218,7 +218,7 @@ function collectFormData() {
     if (instruction.trim()) {
       steps.push({
         step_number: index + 1,
-        instruction: instruction.trim(),
+        description: instruction.trim(),
       })
     }
   })

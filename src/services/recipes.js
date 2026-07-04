@@ -57,7 +57,7 @@ export async function getRecipeById(id) {
  * @param {string} recipeData.imageUrl
  * @param {string} recipeData.authorId
  * @param {Array<{name: string, amount: string, unit: string}>} ingredients
- * @param {Array<{step_number: number, instruction: string}>} steps
+ * @param {Array<{step_number: number, description: string}>} steps
  * @returns {Promise<{id: string}>} The created recipe
  */
 export async function createRecipe(recipeData, ingredients, steps) {
@@ -71,7 +71,7 @@ export async function createRecipe(recipeData, ingredients, steps) {
       cook_time: 0,
       servings: recipeData.servings,
       image_url: recipeData.imageUrl,
-      author: recipeData.authorId,
+      user_id: recipeData.authorId,
     })
     .select('id')
     .single()
@@ -99,7 +99,7 @@ export async function createRecipe(recipeData, ingredients, steps) {
     const stepsData = steps.map((step) => ({
       recipe_id: recipe.id,
       step_number: step.step_number,
-      instruction: step.instruction,
+      description: step.description,
     }))
 
     const { error: stepsError } = await supabase
