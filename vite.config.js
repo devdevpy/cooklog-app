@@ -13,6 +13,7 @@ export default defineConfig({
         editRecipe: resolve(__dirname, 'src/pages/edit-recipe.html'),
         recipeDetail: resolve(__dirname, 'src/pages/recipe-detail.html'),
         admin: resolve(__dirname, 'src/pages/admin.html'),
+        profile: resolve(__dirname, 'src/pages/profile.html'),
       },
     },
   },

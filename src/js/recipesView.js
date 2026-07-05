@@ -38,8 +38,10 @@ function imageBlock(recipe) {
 
 /**
  * Render a single recipe as a card (column wrapper included).
+ * Pass `{ showActions: true }` to render owner Edit/Delete controls on the
+ * card (used by the profile page's "My Recipes" grid).
  */
-export function recipeCard(recipe) {
+export function recipeCard(recipe, { showActions = false } = {}) {
   const categoryName = recipe.categories?.name
   const authorName = recipe.author?.full_name
   const badge = categoryName
@@ -54,6 +56,22 @@ export function recipeCard(recipe) {
     : ''
 
   const detailHref = `${DETAIL_URL}?id=${encodeURIComponent(recipe.id)}`
+
+  const actionsRow = showActions
+    ? `
+        <div class="d-flex gap-2 mb-2">
+          <a href="/src/pages/edit-recipe.html?id=${encodeURIComponent(recipe.id)}"
+             class="btn btn-outline-primary btn-sm flex-fill d-flex align-items-center justify-content-center gap-1">
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <button type="button"
+                  class="btn btn-outline-danger btn-sm flex-fill d-flex align-items-center justify-content-center gap-1"
+                  data-delete-id="${escapeHtml(recipe.id)}"
+                  data-delete-title="${escapeHtml(recipe.title)}">
+            <i class="bi bi-trash"></i> Delete
+          </button>
+        </div>`
+    : ''
 
   return `
   <div class="col">
@@ -88,6 +106,7 @@ export function recipeCard(recipe) {
               )}</div>`
             : ''
         }
+        ${actionsRow}
         <a href="${detailHref}"
            class="btn btn-outline-primary w-100 mt-auto d-flex align-items-center justify-content-center gap-1">
           <i class="bi bi-eye"></i> View Recipe
@@ -98,12 +117,13 @@ export function recipeCard(recipe) {
 }
 
 /**
- * Render the full grid of recipe cards.
+ * Render the full grid of recipe cards. `options` is forwarded to every
+ * `recipeCard` call (e.g. `{ showActions: true }`).
  */
-export function recipesGrid(recipes) {
+export function recipesGrid(recipes, options = {}) {
   return `
     <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-      ${recipes.map(recipeCard).join('')}
+      ${recipes.map((recipe) => recipeCard(recipe, options)).join('')}
     </div>`
 }
 
@@ -142,7 +162,7 @@ export function emptyState({ filtered = false } = {}) {
       <i class="bi bi-journal-richtext empty-state-icon"></i>
       <h5 class="empty-state-title mt-3">No recipes yet</h5>
       <p class="text-secondary">Be the first to share a delicious recipe.</p>
-      <a href="/src/pages/recipe-form.html" class="btn btn-primary d-inline-flex align-items-center gap-1">
+      <a href="/src/pages/add-recipe.html" class="btn btn-primary d-inline-flex align-items-center gap-1">
         <i class="bi bi-plus-lg"></i> Add a recipe
       </a>
     </div>`
