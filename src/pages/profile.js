@@ -146,7 +146,8 @@ async function init() {
     setupImagePreview(
       document.getElementById('avatarInput'),
       document.getElementById('avatarPreview'),
-      profile.avatar_url ? `${profile.avatar_url}?v=${Date.now()}` : null
+      profile.avatar_url ? `${profile.avatar_url}?v=${Date.now()}` : null,
+      { showCaption: false }
     )
 
     renderStats(myRecipes)

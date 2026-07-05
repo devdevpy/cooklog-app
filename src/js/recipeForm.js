@@ -37,12 +37,18 @@ export async function loadCategories(selectEl, currentId = null) {
 
 /**
  * Wire the file input to render a live preview + optional existing image.
+ * Pass `{ showCaption: false }` for contexts (e.g. a circular avatar frame)
+ * where the "Current image..." helper text doesn't apply.
  */
-export function setupImagePreview(imageInput, previewContainer, existingUrl = null) {
+export function setupImagePreview(imageInput, previewContainer, existingUrl = null, { showCaption = true } = {}) {
+  const captionHtml = showCaption
+    ? '<p class="form-text mb-0">Current image. Choose a new file to replace it.</p>'
+    : ''
+
   if (existingUrl) {
     previewContainer.innerHTML = `
       <img src="${escapeAttr(existingUrl)}" alt="Current image" class="img-thumbnail" style="max-width: 300px; max-height: 300px;">
-      <p class="form-text mb-0">Current image. Choose a new file to replace it.</p>
+      ${captionHtml}
     `
   }
 
@@ -59,7 +65,7 @@ export function setupImagePreview(imageInput, previewContainer, existingUrl = nu
     } else if (existingUrl) {
       previewContainer.innerHTML = `
         <img src="${escapeAttr(existingUrl)}" alt="Current image" class="img-thumbnail" style="max-width: 300px; max-height: 300px;">
-        <p class="form-text mb-0">Current image. Choose a new file to replace it.</p>
+        ${captionHtml}
       `
     } else {
       previewContainer.innerHTML = ''
