@@ -78,6 +78,7 @@ async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
         timeMinutes: data.timeMinutes,
         servings: data.servings,
         imageUrl,
+        isPrivate: data.isPrivate,
       },
       data.ingredients,
       data.steps

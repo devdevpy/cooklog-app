@@ -45,13 +45,20 @@ export function recipeCard(recipe) {
   const badge = categoryName
     ? `<span class="badge text-bg-primary">${escapeHtml(categoryName)}</span>`
     : `<span class="badge text-bg-secondary">Uncategorized</span>`
+  // RLS only returns private recipes to their owner or an admin, so if
+  // `is_private` is true here the current viewer is authorised to see it.
+  const privateBadge = recipe.is_private
+    ? `<span class="badge text-bg-warning ms-1" title="Private recipe">
+         <i class="bi bi-lock-fill me-1"></i>Private
+       </span>`
+    : ''
 
   return `
   <div class="col">
     <div class="card h-100 shadow-sm border-0">
       ${imageBlock(recipe)}
       <div class="card-body d-flex flex-column">
-        <div class="mb-2">${badge}</div>
+        <div class="mb-2">${badge}${privateBadge}</div>
         <h5 class="card-title">${escapeHtml(recipe.title)}</h5>
         ${
           recipe.description

@@ -69,6 +69,7 @@ async function handleSubmit(e) {
       timeMinutes: data.timeMinutes,
       servings: data.servings,
       imageUrl,
+      isPrivate: data.isPrivate,
       authorId: user.id,
     }
 
