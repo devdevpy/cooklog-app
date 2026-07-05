@@ -15,10 +15,10 @@ function displayName(user) {
 
 function renderMarkup() {
   return `
-  <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom sticky-top">
+  <nav class="navbar navbar-expand-lg site-navbar sticky-top">
     <div class="container">
-      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="${ROUTES.home}">
-        <i class="bi bi-egg-fried text-primary fs-4"></i>
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2 site-brand" href="${ROUTES.home}">
+        <i class="bi bi-egg-fried fs-4"></i>
         <span>CookLog</span>
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"

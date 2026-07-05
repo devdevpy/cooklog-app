@@ -1,0 +1,669 @@
+/* ==========================================================================
+   CookLog — Fine Dining Green & Gold theme
+   Design system: colors, type, and component overrides for Bootstrap 5.
+   Fonts are loaded via <link> tags in each page's <head>.
+   ========================================================================== */
+
+:root {
+  --color-primary: #1B4332;
+  --color-primary-light: #2D6A4F;
+  --color-accent: #D4AF37;
+  --color-accent-light: #F0D060;
+  --color-bg: #FAFAF8;
+  --color-bg-card: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-text-muted: #6B7280;
+  --color-border: #E5E7EB;
+
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  --shadow-sm: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 8px 40px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 2px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Base / global
+ * ---------------------------------------------------------------------- */
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) var(--color-bg);
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  animation: cooklog-fade-in 0.3s ease;
+}
+
+@keyframes cooklog-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+}
+
+a {
+  color: var(--color-primary);
+}
+a:hover {
+  color: var(--color-primary-light);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 8px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-light);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Navbar
+ * ---------------------------------------------------------------------- */
+
+.site-navbar {
+  background: var(--color-primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.site-navbar .site-brand {
+  font-family: var(--font-heading);
+  color: var(--color-accent) !important;
+  font-size: 1.5rem;
+}
+.site-navbar .site-brand i {
+  color: var(--color-accent);
+}
+
+.site-navbar .nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+.site-navbar .nav-link:hover,
+.site-navbar .nav-link:focus {
+  color: var(--color-accent) !important;
+}
+
+.site-navbar .nav-item span,
+.site-navbar .nav-item i.bi-person-circle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.site-navbar .navbar-toggler {
+  border-color: var(--color-accent);
+}
+.site-navbar .navbar-toggler:focus {
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25);
+}
+.site-navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(212, 175, 55, 1)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+.site-navbar .btn-outline-secondary {
+  border-color: rgba(255, 255, 255, 0.5);
+  color: #fff;
+}
+.site-navbar .btn-outline-secondary:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Hero banner (home page)
+ * ---------------------------------------------------------------------- */
+
+.hero-banner {
+  position: relative;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 2px,
+      transparent 14px
+    );
+  overflow: hidden;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.hero-title {
+  font-family: var(--font-heading);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  margin-bottom: 0.5rem;
+}
+.hero-title i {
+  color: var(--color-accent);
+}
+
+.hero-subtitle {
+  color: var(--color-accent-light);
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+.hero-search-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.75rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero-search-box,
+.hero-filter-box {
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.hero-search-row .input-group {
+  border-radius: 999px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-search-row .input-group-text {
+  background: #fff;
+  border: none;
+  color: var(--color-primary);
+}
+
+.hero-search-row .form-control,
+.hero-search-row .form-select {
+  border: none;
+  background: #fff;
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+}
+.hero-search-row .form-control:focus,
+.hero-search-row .form-select:focus {
+  box-shadow: none;
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.hero-random-btn,
+.hero-cta-btn {
+  border-radius: 999px;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  white-space: nowrap;
+}
+
+.hero-random-btn {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+}
+.hero-random-btn:hover {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-primary);
+}
+
+.hero-cta-btn {
+  background: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+.hero-cta-btn:hover {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent-light);
+  color: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+  .hero-banner {
+    min-height: 280px;
+  }
+  .hero-search-row {
+    flex-direction: column;
+  }
+  .hero-search-box,
+  .hero-filter-box,
+  .hero-random-btn,
+  .hero-cta-btn {
+    flex: 0 0 auto;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
+ * Category filter pills / view-scope toggle
+ * ---------------------------------------------------------------------- */
+
+.view-scope-pill {
+  border-radius: 999px !important;
+  font-weight: 600;
+  position: relative;
+  padding-left: 1.1rem;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.view-scope-pill.active {
+  padding-left: 1.6rem;
+}
+.view-scope-pill.active::before {
+  content: '';
+  position: absolute;
+  left: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Recipe cards
+ * ---------------------------------------------------------------------- */
+
+.recipe-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-card);
+  border-radius: 12px;
+  border-top: 3px solid transparent;
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+}
+.recipe-card:hover {
+  border-top-color: var(--color-accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+  transform: translateY(-2px);
+}
+
+.recipe-card-media {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #eee;
+  flex: 0 0 auto;
+}
+
+.recipe-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.recipe-card:hover .recipe-card-img {
+  transform: scale(1.04);
+}
+
+.recipe-card-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-muted);
+  background: #f1f1ee;
+  font-size: 2.5rem;
+}
+
+.recipe-card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(27, 67, 50, 0.85);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+.recipe-card:hover .recipe-card-overlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.recipe-card-overlay-title {
+  font-family: var(--font-heading);
+  color: #fff;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+.recipe-card-overlay-link {
+  color: var(--color-accent);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.recipe-card-body {
+  padding: 1rem 1.1rem 1.1rem;
+  flex: 1 1 auto;
+}
+
+.recipe-card-title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+}
+
+.recipe-card-meta {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.recipe-badge {
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+  border-radius: 999px;
+  padding: 0.35em 0.75em;
+}
+.recipe-badge-muted {
+  background: #9CA3AF;
+}
+
+/* Theme the badges used elsewhere (recipe detail, forms) to match. */
+.badge.bg-primary,
+.badge.text-bg-primary {
+  background-color: var(--color-primary) !important;
+}
+.badge.bg-primary-subtle {
+  background-color: rgba(27, 67, 50, 0.1) !important;
+  color: var(--color-primary) !important;
+}
+.badge.text-bg-warning,
+.badge.bg-warning-subtle {
+  background-color: rgba(212, 175, 55, 0.18) !important;
+  color: #7a5c00 !important;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Buttons (global)
+ * ---------------------------------------------------------------------- */
+
+.btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 10px 24px;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.btn-sm {
+  padding: 6px 16px;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--color-primary-light);
+  border-color: var(--color-primary-light);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(27, 67, 50, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text-muted);
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #DC2626;
+  border-color: #DC2626;
+  color: #fff;
+}
+.btn-danger:hover,
+.btn-danger:focus {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  color: #DC2626;
+  border-color: #DC2626;
+}
+.btn-outline-danger:hover,
+.btn-outline-danger:focus {
+  background-color: #DC2626;
+  border-color: #DC2626;
+  color: #fff;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Forms
+ * ---------------------------------------------------------------------- */
+
+.form-label {
+  font-family: var(--font-body);
+  font-weight: 500;
+  color: var(--color-text);
+  margin-bottom: 6px;
+}
+
+.form-control,
+.form-select {
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  color: var(--color-text);
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
+}
+
+.input-group-text {
+  border: 1.5px solid var(--color-border);
+  color: var(--color-text-muted);
+  background: #fdfdfc;
+}
+
+.card {
+  background: var(--color-bg-card);
+  border-radius: 16px;
+}
+.card.border-0.shadow-sm,
+.card.shadow-sm {
+  box-shadow: var(--shadow-md) !important;
+}
+.card-body.p-4,
+.card-body.p-4.p-sm-5 {
+  padding: 2.25rem !important;
+}
+@media (min-width: 576px) {
+  .card-body.p-sm-5 {
+    padding: 2.5rem !important;
+  }
+}
+
+.auth-card {
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Footer
+ * ---------------------------------------------------------------------- */
+
+.site-footer {
+  background: var(--color-primary);
+  border-top: 3px solid var(--color-accent);
+  color: rgba(255, 255, 255, 0.85);
+  text-align: center;
+  padding: 1.75rem 1rem;
+  margin-top: 3rem;
+  font-size: 0.9rem;
+}
+.site-footer .site-footer-brand {
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Section headers
+ * ---------------------------------------------------------------------- */
+
+.section-header {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  display: inline-block;
+  margin-bottom: 1.5rem;
+}
+.section-header::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-accent);
+  margin-top: 0.4rem;
+}
+
+/* ---------------------------------------------------------------------- *
+ * Loading / empty states
+ * ---------------------------------------------------------------------- */
+
+.skeleton-shimmer {
+  position: relative;
+  background: #eceae4;
+  overflow: hidden;
+}
+.skeleton-shimmer::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  animation: cooklog-shimmer 1.4s linear infinite;
+}
+@keyframes cooklog-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.recipe-card-skeleton {
+  box-shadow: var(--shadow-sm);
+}
+.recipe-card-skeleton .skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+}
+.skeleton-line-badge {
+  width: 30%;
+}
+.skeleton-line-title {
+  width: 70%;
+  height: 16px;
+}
+.skeleton-line-text {
+  width: 90%;
+}
+
+.empty-state-icon {
+  font-size: 3.5rem;
+  color: var(--color-accent);
+}
+.empty-state-title {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+}
+
+/* ---------------------------------------------------------------------- *
+ * Misc
+ * ---------------------------------------------------------------------- */
+
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: var(--shadow-md);
+}
+.modal-header {
+  border-bottom-color: var(--color-border);
+}
+.modal-header .modal-title {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+}
+
+.spinner-border.text-primary {
+  color: var(--color-primary) !important;
+}

@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import './css/style.css'
 import { Modal } from 'bootstrap'
 import { initNavbar } from './components/navbar.js'
 import { supabase } from './js/supabaseClient.js'

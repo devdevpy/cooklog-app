@@ -147,7 +147,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
 
             <hr class="my-4">
 
-            <h3 class="h5 mb-3">
+            <h3 class="h5 mb-3 section-header">
               <i class="bi bi-basket me-2"></i>Ingredients
             </h3>
             <ul class="list-unstyled mb-4">
@@ -156,7 +156,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
 
             <hr class="my-4">
 
-            <h3 class="h5 mb-3">
+            <h3 class="h5 mb-3 section-header">
               <i class="bi bi-list-ol me-2"></i>Instructions
             </h3>
             <div>
