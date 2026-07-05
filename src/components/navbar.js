@@ -1,11 +1,12 @@
 import { supabase } from '../js/supabaseClient.js'
-import { signOut } from '../services/auth.js'
+import { signOut, isAdmin } from '../services/auth.js'
 
 const ROUTES = {
   home: '/',
   login: '/src/pages/login.html',
   register: '/src/pages/register.html',
   addRecipe: '/src/pages/add-recipe.html',
+  admin: '/src/pages/admin.html',
 }
 
 function displayName(user) {
@@ -49,7 +50,15 @@ function loggedOutMenu() {
     </li>`
 }
 
-function loggedInMenu(user) {
+function loggedInMenu(user, admin) {
+  const adminLink = admin
+    ? `
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.admin}">
+        <i class="bi bi-shield-lock"></i> Admin
+      </a>
+    </li>`
+    : ''
   return `
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.home}?view=mine">
@@ -61,6 +70,7 @@ function loggedInMenu(user) {
         <i class="bi bi-plus-circle"></i> Add Recipe
       </a>
     </li>
+    ${adminLink}
     <li class="nav-item d-flex align-items-center text-secondary px-lg-2 py-2 py-lg-0">
       <i class="bi bi-person-circle me-1"></i>
       <span class="fw-medium text-truncate" style="max-width: 180px;">${displayName(user)}</span>
@@ -72,10 +82,11 @@ function loggedInMenu(user) {
     </li>`
 }
 
-function updateMenu(root, user) {
+async function updateMenu(root, user) {
   const menu = root.querySelector('[data-auth-menu]')
   if (!menu) return
-  menu.innerHTML = user ? loggedInMenu(user) : loggedOutMenu()
+  const admin = user ? await isAdmin(user.id) : false
+  menu.innerHTML = user ? loggedInMenu(user, admin) : loggedOutMenu()
 
   const logoutBtn = menu.querySelector('[data-logout]')
   if (logoutBtn) {
@@ -106,7 +117,7 @@ export async function initNavbar(selector = '#navbar') {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-  updateMenu(root, user)
+  await updateMenu(root, user)
 
   // Keep in sync with future auth changes (login / logout / token refresh)
   supabase.auth.onAuthStateChange((_event, session) => {
