@@ -676,9 +676,14 @@ a:hover {
   width: 140px;
   height: 140px;
   flex-shrink: 0;
-  font-size: 140px;
+  /* Reset to a normal font-size so any injected content (captions, etc.)
+     doesn't inherit the fallback icon's huge glyph size below. */
+  font-size: 1rem;
   color: var(--color-border);
   line-height: 1;
+}
+.profile-avatar-frame > i {
+  font-size: 140px;
 }
 .profile-avatar-frame img {
   width: 140px;
