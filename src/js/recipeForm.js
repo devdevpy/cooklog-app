@@ -70,24 +70,24 @@ export function setupImagePreview(imageInput, previewContainer, existingUrl = nu
 function ingredientRowHtml({ name = '', amount = '', unit = '' } = {}) {
   return `
     <div class="row g-2">
-      <div class="col-md-5">
+      <div class="col-12 col-md-5">
         <input type="text" class="form-control form-control-sm"
           placeholder="Ingredient name" name="ingredientName[]"
           value="${escapeAttr(name)}" required />
       </div>
-      <div class="col-md-3">
+      <div class="col-6 col-md-3">
         <input type="text" class="form-control form-control-sm"
           placeholder="Amount" name="ingredientAmount[]"
           value="${escapeAttr(amount)}" required />
       </div>
-      <div class="col-md-3">
+      <div class="col-6 col-md-3">
         <input type="text" class="form-control form-control-sm"
           placeholder="Unit (e.g. g, cup, pinch)" name="ingredientUnit[]"
           value="${escapeAttr(unit)}" required />
       </div>
-      <div class="col-md-1">
+      <div class="col-12 col-md-1">
         <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ingredient">
-          <i class="bi bi-trash"></i>
+          <i class="bi bi-trash"></i> <span class="d-md-none">Remove</span>
         </button>
       </div>
     </div>

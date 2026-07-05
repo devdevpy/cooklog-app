@@ -5,6 +5,7 @@ import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { getUsersWithRoles, setUserRole, getAdminStats } from '../services/admin.js'
+import { showToast, storeToast } from '../js/toast.js'
 import {
   getCategories,
   createCategory,
@@ -12,8 +13,6 @@ import {
   deleteCategory,
   countRecipesInCategory,
 } from '../js/categories.js'
-
-const NOTICE_KEY = 'cooklog:notice'
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -33,17 +32,11 @@ function formatDate(value) {
   })
 }
 
-function showAdminAlert(type, message) {
-  const el = document.getElementById('adminAlert')
-  el.className = `alert alert-${type}`
-  el.textContent = message
-}
-
 /**
  * Only logged-in admins may reach this page. Anonymous visitors go to
  * login (matching the pattern used elsewhere); logged-in non-admins are
- * bounced home with a message shown via sessionStorage (no flash-message
- * system exists yet, so `index.html`/`main.js` reads this key on load).
+ * bounced home with a toast shown via `storeToast` (read on the home
+ * page's next load since we're navigating away here).
  */
 async function guardAccess() {
   const user = await getUser()
@@ -53,7 +46,7 @@ async function guardAccess() {
   }
   const admin = await isAdmin(user.id)
   if (!admin) {
-    sessionStorage.setItem(NOTICE_KEY, 'You do not have access to the admin panel.')
+    storeToast('You do not have access to the admin panel.', 'warning')
     window.location.href = '/'
     return null
   }
@@ -117,8 +110,8 @@ function openAddCategoryModal() {
   categoryForm.reset()
   categoryForm.classList.remove('was-validated')
   categoryIdInput.value = ''
-  categoryModalTitle.textContent = 'Add Category'
-  categorySaveBtn.textContent = 'Add Category'
+  categoryModalTitle.innerHTML = '<i class="bi bi-tags me-2"></i>Add Category'
+  categorySaveBtn.innerHTML = '<i class="bi bi-plus-circle me-1"></i> Add Category'
   categoryModal.show()
 }
 
@@ -127,8 +120,8 @@ function openEditCategoryModal(id, name) {
   categoryForm.classList.remove('was-validated')
   categoryIdInput.value = id
   categoryNameInput.value = name
-  categoryModalTitle.textContent = 'Edit Category'
-  categorySaveBtn.textContent = 'Save Changes'
+  categoryModalTitle.innerHTML = '<i class="bi bi-tags me-2"></i>Edit Category'
+  categorySaveBtn.innerHTML = '<i class="bi bi-check-circle me-1"></i> Save Changes'
   categoryModal.show()
 }
 
@@ -146,10 +139,10 @@ categoryForm.addEventListener('submit', async (e) => {
   try {
     if (id) {
       await updateCategory(id, name)
-      showAdminAlert('success', `Category "${name}" updated.`)
+      showToast(`Category "${name}" updated.`, 'success')
     } else {
       await createCategory(name)
-      showAdminAlert('success', `Category "${name}" added.`)
+      showToast(`Category "${name}" added.`, 'success')
     }
     categoryModal.hide()
     await loadCategoriesTable()
@@ -159,7 +152,7 @@ categoryForm.addEventListener('submit', async (e) => {
       err?.code === '23505'
         ? 'A category with this name already exists.'
         : err?.message || 'Failed to save category.'
-    showAdminAlert('danger', message)
+    showToast(message, 'danger')
   } finally {
     categorySaveBtn.disabled = false
   }
@@ -209,13 +202,13 @@ async function openDeleteCategoryModal(id, name) {
     try {
       await deleteCategory(id)
       deleteCategoryModal.hide()
-      showAdminAlert('success', `Category "${name}" deleted.`)
+      showToast(`Category "${name}" deleted.`, 'success')
       await loadCategoriesTable()
     } catch (err) {
       console.error('Failed to delete category:', err)
       btn.disabled = false
       btn.innerHTML = `<i class="bi bi-trash me-1"></i> Delete`
-      showAdminAlert('danger', err?.message || 'Failed to delete category.')
+      showToast(err?.message || 'Failed to delete category.', 'danger')
     }
   })
 }
@@ -251,9 +244,10 @@ function userRowHtml(u) {
       <td><span class="badge ${isAdminRole ? 'bg-primary' : 'bg-secondary-subtle text-secondary'}">${u.role}</span></td>
       <td class="text-end">
         <button type="button"
-          class="btn btn-sm ${isAdminRole ? 'btn-outline-danger' : 'btn-outline-primary'} toggle-role-btn"
+          class="btn btn-sm ${isAdminRole ? 'btn-outline-danger' : 'btn-outline-primary'} toggle-role-btn d-inline-flex align-items-center gap-1"
           data-id="${u.id}" data-role="${u.role}"
           ${isSelf ? 'disabled title="You can\'t change your own role"' : ''}>
+          <i class="bi ${isAdminRole ? 'bi-shield-slash' : 'bi-shield-check'}"></i>
           ${isAdminRole ? 'Revoke admin' : 'Make admin'}
         </button>
       </td>
@@ -287,13 +281,13 @@ document.getElementById('usersTableBody').addEventListener('click', async (e) =>
   btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
   try {
     await setUserRole(userId, nextRole)
-    showAdminAlert('success', `Role updated to "${nextRole}".`)
+    showToast(`Role updated to "${nextRole}".`, 'success')
     await loadUsersTable()
   } catch (err) {
     console.error('Failed to update role:', err)
     btn.disabled = false
     btn.innerHTML = originalHtml
-    showAdminAlert('danger', err?.message || 'Failed to update role.')
+    showToast(err?.message || 'Failed to update role.', 'danger')
   }
 })
 

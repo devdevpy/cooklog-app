@@ -3,6 +3,9 @@ import { resolve } from 'node:path'
 
 // Multi-page setup so `vite build` includes the auth pages.
 export default defineConfig({
+  // 'mpa' so unmatched routes get a real 404 in dev instead of silently
+  // falling back to index.html (the SPA default).
+  appType: 'mpa',
   build: {
     rollupOptions: {
       input: {
@@ -14,6 +17,7 @@ export default defineConfig({
         recipeDetail: resolve(__dirname, 'src/pages/recipe-detail.html'),
         admin: resolve(__dirname, 'src/pages/admin.html'),
         profile: resolve(__dirname, 'src/pages/profile.html'),
+        notFound: resolve(__dirname, '404.html'),
       },
     },
   },

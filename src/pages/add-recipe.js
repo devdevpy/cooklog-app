@@ -5,6 +5,7 @@ import { initNavbar } from '../components/navbar.js'
 import { getUser } from '../services/auth.js'
 import { uploadRecipeImage } from '../services/storage.js'
 import { createRecipe } from '../services/recipes.js'
+import { showToast, storeToast } from '../js/toast.js'
 import {
   loadCategories,
   setupImagePreview,
@@ -34,7 +35,7 @@ async function handleSubmit(e) {
 
   const user = await getUser()
   if (!user) {
-    alert('You must be logged in to add a recipe.')
+    storeToast('You must be logged in to add a recipe.', 'warning')
     window.location.href = '/src/pages/login.html'
     return
   }
@@ -74,10 +75,11 @@ async function handleSubmit(e) {
     }
 
     const recipe = await createRecipe(recipeData, data.ingredients, data.steps)
+    storeToast('Recipe added successfully!', 'success')
     window.location.href = `/src/pages/recipe-detail.html?id=${recipe.id}`
   } catch (error) {
     console.error('Failed to save recipe:', error)
-    alert(`Error: ${error.message || 'Failed to save recipe. Please try again.'}`)
+    showToast(error.message || 'Failed to save recipe. Please try again.', 'danger')
     submitBtn.disabled = false
     formContainer.classList.remove('d-none')
     loadingSpinner.classList.add('d-none')
