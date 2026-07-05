@@ -251,6 +251,7 @@ export function collectRecipeFormData(form) {
     timeMinutes: parseInt(formData.get('timeMinutes'), 10),
     servings: parseInt(formData.get('servings'), 10),
     imageFile: formData.get('image'),
+    isPrivate: formData.get('isPrivate') === 'on',
     ingredients,
     steps,
   }
@@ -266,4 +267,6 @@ export function prefillScalarFields(form, recipe) {
   form.querySelector('#description').value = recipe.description ?? ''
   form.querySelector('#timeMinutes').value = recipe.prep_time ?? ''
   form.querySelector('#servings').value = recipe.servings ?? ''
+  const isPrivateEl = form.querySelector('#isPrivate')
+  if (isPrivateEl) isPrivateEl.checked = Boolean(recipe.is_private)
 }

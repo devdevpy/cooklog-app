@@ -118,6 +118,13 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
 
             <div class="mb-3">
               <span class="badge bg-primary-subtle text-primary">${escapeHtml(categoryName)}</span>
+              ${
+                recipe.is_private && canManage
+                  ? `<span class="badge bg-warning-subtle text-warning-emphasis ms-1" title="Private recipe">
+                       <i class="bi bi-lock-fill me-1"></i>Private
+                     </span>`
+                  : ''
+              }
             </div>
 
             <h1 class="h2 mb-3">${escapeHtml(recipe.title)}</h1>

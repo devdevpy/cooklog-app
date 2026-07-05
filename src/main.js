@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { Modal } from 'bootstrap'
 import { initNavbar } from './components/navbar.js'
+import { supabase } from './js/supabaseClient.js'
 import { getRecipes } from './services/recipes.js'
 import { getCategories } from './js/categories.js'
 import {
@@ -60,7 +61,12 @@ async function loadCategories() {
 async function loadRecipes() {
   container.innerHTML = loadingState()
   try {
-    allRecipes = await getRecipes()
+    // "My Recipes" for authenticated users: only show the current user's rows.
+    // Anonymous visitors still see the full public browsing list.
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    allRecipes = await getRecipes(user ? { userId: user.id } : {})
     renderList()
   } catch (err) {
     console.error('Failed to load recipes:', err)

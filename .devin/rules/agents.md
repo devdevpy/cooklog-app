@@ -53,3 +53,13 @@ Six tables:
 - Do not duplicate the Supabase client initialization
 - Do not disable RLS policies for any reason
 - Always verify a feature works end-to-end (UI → Supabase → UI update) before considering it done
+
+## Visual Design System
+- Color palette defined as CSS variables in `src/css/style.css`:
+  - `--color-primary: #1B4332` (deep forest green)
+  - `--color-accent: #D4AF37` (warm gold)
+  - `--color-bg: #FAFAF8` (warm off-white)
+- Fonts: Playfair Display for headings, Inter for body text
+- Recipe cards: square with green overlay hover effect
+- Style reference: fine dining / modern clean aesthetic
+- Always use CSS variables — never hardcode colors

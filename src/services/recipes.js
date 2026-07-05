@@ -9,6 +9,7 @@ const RECIPE_SELECT = `
   prep_time,
   cook_time,
   servings,
+  is_private,
   created_at,
   category_id,
   categories ( name ),
@@ -19,12 +20,13 @@ const RECIPE_SELECT = `
  * Fetch recipes, newest first. Optional server-side filters.
  * @param {{ categoryId?: string|null, search?: string }} [opts]
  */
-export async function getRecipes({ categoryId = null, search = '' } = {}) {
+export async function getRecipes({ categoryId = null, search = '', userId = null } = {}) {
   let query = supabase
     .from('recipes')
     .select(RECIPE_SELECT)
     .order('created_at', { ascending: false })
 
+  if (userId) query = query.eq('user_id', userId)
   if (categoryId) query = query.eq('category_id', categoryId)
   if (search) query = query.ilike('title', `%${search}%`)
 
@@ -72,6 +74,7 @@ export async function createRecipe(recipeData, ingredients, steps) {
       cook_time: 0,
       servings: recipeData.servings,
       image_url: recipeData.imageUrl,
+      is_private: recipeData.isPrivate === true,
       user_id: recipeData.authorId,
     })
     .select('id')
@@ -154,6 +157,9 @@ export async function updateRecipe(recipeId, recipeData, ingredients, steps) {
   }
   if (recipeData.imageUrl !== undefined) {
     updatePayload.image_url = recipeData.imageUrl
+  }
+  if (recipeData.isPrivate !== undefined) {
+    updatePayload.is_private = recipeData.isPrivate === true
   }
 
   const { error: updateError } = await supabase
