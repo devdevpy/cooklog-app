@@ -162,12 +162,21 @@ export async function updateRecipe(recipeId, recipeData, ingredients, steps) {
     updatePayload.is_private = recipeData.isPrivate === true
   }
 
-  const { error: updateError } = await supabase
+  // `.select()` forces PostgREST to return the updated row(s), so we can
+  // tell a genuine 0-row match (e.g. RLS silently filtered it out) apart
+  // from success — Postgrest returns no `error` for either case otherwise.
+  const { data: updatedRows, error: updateError } = await supabase
     .from('recipes')
     .update(updatePayload)
     .eq('id', recipeId)
+    .select('id')
 
   if (updateError) throw updateError
+  if (!updatedRows || updatedRows.length === 0) {
+    throw new Error(
+      'Update failed: this recipe could not be found, or you do not have permission to edit it.'
+    )
+  }
 
   const { error: delIngErr } = await supabase
     .from('ingredients')
