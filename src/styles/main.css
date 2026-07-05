@@ -521,6 +521,21 @@ a:hover {
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.15);
 }
 
+.form-check-input:checked {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+.form-check-input:focus {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 0.25rem rgba(212, 175, 55, 0.25);
+}
+/* Bootstrap encodes the switch knob color in an inline SVG data-uri rather
+   than a themeable variable, so the focus-state knob needs its own copy
+   with --color-accent's value (#D4AF37) hardcoded in the fill. */
+.form-switch .form-check-input:focus {
+  --bs-form-switch-bg: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23D4AF37'/%3e%3c/svg%3e");
+}
+
 .input-group-text {
   border: 1.5px solid var(--color-border);
   color: var(--color-text-muted);
