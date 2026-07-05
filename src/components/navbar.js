@@ -52,7 +52,7 @@ function loggedOutMenu() {
 function loggedInMenu(user) {
   return `
     <li class="nav-item">
-      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.home}">
+      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.home}?view=mine">
         <i class="bi bi-journal-richtext"></i> My Recipes
       </a>
     </li>
