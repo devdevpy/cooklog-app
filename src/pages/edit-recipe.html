@@ -111,17 +111,13 @@
                           <input type="text" class="form-control form-control-sm" placeholder="Amount" name="ingredientAmount[]" required />
                         </div>
                         <div class="col-md-3">
-                          <select class="form-select form-select-sm" name="ingredientUnit[]" required>
-                            <option value="">Unit</option>
-                            <option value="g">g</option>
-                            <option value="kg">kg</option>
-                            <option value="ml">ml</option>
-                            <option value="l">l</option>
-                            <option value="tsp">tsp</option>
-                            <option value="tbsp">tbsp</option>
-                            <option value="cup">cup</option>
-                            <option value="pcs">pcs</option>
-                          </select>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            placeholder="Unit (e.g. g, cup, pinch)"
+                            name="ingredientUnit[]"
+                            required
+                          />
                         </div>
                         <div class="col-md-1">
                           <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ingredient" disabled>

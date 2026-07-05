@@ -3,8 +3,6 @@
 
 import { supabase } from './supabaseClient.js'
 
-const UNIT_OPTIONS = ['g', 'kg', 'ml', 'l', 'tsp', 'tbsp', 'cup', 'pcs']
-
 function escapeAttr(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -70,9 +68,6 @@ export function setupImagePreview(imageInput, previewContainer, existingUrl = nu
 }
 
 function ingredientRowHtml({ name = '', amount = '', unit = '' } = {}) {
-  const options = UNIT_OPTIONS.map(
-    (u) => `<option value="${u}"${u === unit ? ' selected' : ''}>${u}</option>`
-  ).join('')
   return `
     <div class="row g-2">
       <div class="col-md-5">
@@ -86,10 +81,9 @@ function ingredientRowHtml({ name = '', amount = '', unit = '' } = {}) {
           value="${escapeAttr(amount)}" required />
       </div>
       <div class="col-md-3">
-        <select class="form-select form-select-sm" name="ingredientUnit[]" required>
-          <option value="">Unit</option>
-          ${options}
-        </select>
+        <input type="text" class="form-control form-control-sm"
+          placeholder="Unit (e.g. g, cup, pinch)" name="ingredientUnit[]"
+          value="${escapeAttr(unit)}" required />
       </div>
       <div class="col-md-1">
         <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ingredient">
@@ -225,11 +219,11 @@ export function collectRecipeFormData(form) {
   const units = formData.getAll('ingredientUnit[]')
 
   for (let i = 0; i < names.length; i++) {
-    if (names[i].trim() && amounts[i].trim() && units[i]) {
+    if (names[i].trim() && amounts[i].trim() && units[i].trim()) {
       ingredients.push({
         name: names[i].trim(),
         amount: amounts[i].trim(),
-        unit: units[i],
+        unit: units[i].trim(),
       })
     }
   }
