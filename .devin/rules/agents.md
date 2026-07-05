@@ -11,7 +11,7 @@ CookLog is a personal recipe tracker web application. Users can create, view, ed
 - HTML5 and CSS3
 - Bootstrap 5 (CSS + bundled JS) — always prefer existing Bootstrap components (modals, forms, cards, navbar, alerts, spinners) over building custom UI from scratch
 - Vite as the build tool and dev server
-- Supabase for Auth, Postgres Database, and Storage (recipe images)
+- Supabase for Auth, Postgres Database, and Storage (recipe images, avatars)
 - Deployment target: Netlify
 
 ## Folder Structure

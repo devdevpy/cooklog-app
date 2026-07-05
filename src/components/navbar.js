@@ -7,6 +7,7 @@ const ROUTES = {
   register: '/src/pages/register.html',
   addRecipe: '/src/pages/add-recipe.html',
   admin: '/src/pages/admin.html',
+  profile: '/src/pages/profile.html',
 }
 
 function displayName(user) {
@@ -71,9 +72,11 @@ function loggedInMenu(user, admin) {
       </a>
     </li>
     ${adminLink}
-    <li class="nav-item d-flex align-items-center text-secondary px-lg-2 py-2 py-lg-0">
-      <i class="bi bi-person-circle me-1"></i>
-      <span class="fw-medium text-truncate" style="max-width: 180px;">${displayName(user)}</span>
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center text-secondary px-lg-2 py-2 py-lg-0" href="${ROUTES.profile}">
+        <i class="bi bi-person-circle me-1"></i>
+        <span class="fw-medium text-truncate" style="max-width: 180px;">${displayName(user)}</span>
+      </a>
     </li>
     <li class="nav-item">
       <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1 ms-lg-2" data-logout>
