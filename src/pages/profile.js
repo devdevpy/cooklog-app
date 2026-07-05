@@ -10,6 +10,7 @@ import { deleteRecipeImage } from '../services/storage.js'
 import { uploadAvatar } from '../services/avatarStorage.js'
 import { setupImagePreview } from '../js/recipeForm.js'
 import { recipesGrid, emptyState } from '../js/recipesView.js'
+import { showToast } from '../js/toast.js'
 
 let myRecipes = []
 
@@ -58,13 +59,6 @@ function renderRecipes(recipes) {
     recipes.length > 0 ? recipesGrid(recipes, { showActions: true }) : emptyState()
 }
 
-function showProfileAlert(type, message) {
-  const el = document.getElementById('profileAlert')
-  el.className = `alert alert-${type}`
-  el.textContent = message
-  el.classList.remove('d-none')
-}
-
 function wireAvatarUpload(userId) {
   const input = document.getElementById('avatarInput')
   const spinner = document.getElementById('avatarSpinner')
@@ -78,10 +72,10 @@ function wireAvatarUpload(userId) {
     try {
       const avatarUrl = await uploadAvatar(file, userId)
       await updateAvatarUrl(userId, avatarUrl)
-      showProfileAlert('success', 'Avatar updated.')
+      showToast('Avatar updated.', 'success')
     } catch (error) {
       console.error('Failed to update avatar:', error)
-      showProfileAlert('danger', error.message || 'Failed to update avatar.')
+      showToast(error.message || 'Failed to update avatar.', 'danger')
     } finally {
       input.disabled = false
       spinner.classList.add('d-none')
@@ -123,9 +117,10 @@ function wireDeleteModal() {
       renderRecipes(myRecipes)
       renderStats(myRecipes)
       modal.hide()
+      showToast('Recipe deleted.', 'success')
     } catch (error) {
       console.error('Failed to delete recipe:', error)
-      showProfileAlert('danger', error.message || 'Failed to delete recipe.')
+      showToast(error.message || 'Failed to delete recipe.', 'danger')
     } finally {
       pendingDeleteId = null
       confirmBtn.disabled = false

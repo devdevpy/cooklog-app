@@ -6,6 +6,7 @@ import { initNavbar } from './components/navbar.js'
 import { supabase } from './js/supabaseClient.js'
 import { getRecipes } from './services/recipes.js'
 import { getCategories } from './js/categories.js'
+import { consumeStoredToast } from './js/toast.js'
 import {
   recipesGrid,
   recipeCard,
@@ -13,8 +14,6 @@ import {
   emptyState,
   errorState,
 } from './js/recipesView.js'
-
-const NOTICE_KEY = 'cooklog:notice'
 
 const container = document.querySelector('#recipesContainer')
 const searchInput = document.querySelector('#searchInput')
@@ -33,17 +32,8 @@ function getInitialViewScope() {
   return params.get('view') === 'mine' ? 'mine' : 'mine-public'
 }
 
-function showStoredNotice() {
-  const message = sessionStorage.getItem(NOTICE_KEY)
-  if (!message) return
-  sessionStorage.removeItem(NOTICE_KEY)
-  const el = document.getElementById('homeNotice')
-  el.textContent = message
-  el.classList.remove('d-none')
-}
-
 initNavbar('#navbar')
-showStoredNotice()
+consumeStoredToast()
 
 function getVisibleRecipePool() {
   if (activeViewScope === 'mine') {

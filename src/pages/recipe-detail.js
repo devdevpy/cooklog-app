@@ -6,6 +6,8 @@ import { initNavbar } from '../components/navbar.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { getRecipeWithDetails, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
+import { showToast, storeToast, consumeStoredToast } from '../js/toast.js'
+import { notFoundState } from '../js/recipesView.js'
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -21,7 +23,7 @@ async function loadRecipe() {
   const recipeId = params.get('id')
 
   if (!recipeId) {
-    showError('No recipe ID provided')
+    showNotFound()
     return
   }
 
@@ -40,7 +42,13 @@ async function loadRecipe() {
     }
   } catch (error) {
     console.error('Failed to load recipe:', error)
-    showError('Failed to load recipe. Please try again.')
+    // PGRST116 = PostgREST "no rows found" for .single() — an invalid or
+    // deleted recipe id, distinct from a real fetch failure.
+    if (error?.code === 'PGRST116') {
+      showNotFound()
+    } else {
+      showError('Failed to load recipe. Please try again.')
+    }
   }
 }
 
@@ -194,10 +202,11 @@ function wireManagementActions(recipe) {
       if (imageUrl) {
         await deleteRecipeImage(imageUrl)
       }
+      storeToast('Recipe deleted.', 'success')
       window.location.href = '/'
     } catch (error) {
       console.error('Failed to delete recipe:', error)
-      alert(`Error: ${error.message || 'Failed to delete recipe.'}`)
+      showToast(error.message || 'Failed to delete recipe.', 'danger')
       confirmBtn.disabled = false
       confirmBtn.innerHTML = `<i class="bi bi-trash me-1"></i> Delete`
     }
@@ -219,8 +228,13 @@ function showError(message) {
   `
 }
 
+function showNotFound() {
+  document.getElementById('recipeContent').innerHTML = notFoundState()
+}
+
 async function init() {
   await initNavbar()
+  consumeStoredToast()
   await loadRecipe()
 }
 

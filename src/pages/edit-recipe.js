@@ -5,6 +5,8 @@ import { initNavbar } from '../components/navbar.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { uploadRecipeImage, deleteRecipeImage } from '../services/storage.js'
 import { getRecipeWithDetails, updateRecipe } from '../services/recipes.js'
+import { showToast, storeToast } from '../js/toast.js'
+import { notFoundState } from '../js/recipesView.js'
 import {
   loadCategories,
   setupImagePreview,
@@ -20,6 +22,15 @@ function showError(message) {
   document.getElementById('formCard').classList.add('d-none')
   const errorEl = document.getElementById('errorState')
   errorEl.textContent = message
+  errorEl.classList.remove('d-none')
+}
+
+function showNotFound() {
+  document.getElementById('initialLoader').classList.add('d-none')
+  document.getElementById('formCard').classList.add('d-none')
+  const errorEl = document.getElementById('errorState')
+  errorEl.className = ''
+  errorEl.innerHTML = notFoundState()
   errorEl.classList.remove('d-none')
 }
 
@@ -84,10 +95,11 @@ async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
       data.steps
     )
 
+    storeToast('Recipe updated successfully!', 'success')
     window.location.href = `/src/pages/recipe-detail.html?id=${recipeId}`
   } catch (error) {
     console.error('Failed to update recipe:', error)
-    alert(`Error: ${error.message || 'Failed to update recipe.'}`)
+    showToast(error.message || 'Failed to update recipe.', 'danger')
     submitBtn.disabled = false
     form.classList.remove('d-none')
     loadingSpinner.classList.add('d-none')
@@ -100,7 +112,7 @@ async function init() {
   const params = new URLSearchParams(window.location.search)
   const recipeId = params.get('id')
   if (!recipeId) {
-    showError('No recipe id provided.')
+    showNotFound()
     return
   }
 
@@ -109,7 +121,13 @@ async function init() {
     details = await getRecipeWithDetails(recipeId)
   } catch (err) {
     console.error(err)
-    showError('Failed to load recipe.')
+    // PGRST116 = PostgREST "no rows found" for .single() — an invalid or
+    // deleted recipe id, distinct from a real fetch failure.
+    if (err?.code === 'PGRST116') {
+      showNotFound()
+    } else {
+      showError('Failed to load recipe.')
+    }
     return
   }
 

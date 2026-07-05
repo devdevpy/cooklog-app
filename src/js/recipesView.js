@@ -175,3 +175,23 @@ export function errorState(message) {
       ${escapeHtml(message || 'Failed to load recipes.')}
     </div>`
 }
+
+/**
+ * "Not found" state for an invalid/missing recipe id — distinct from a
+ * generic load error so users see a friendly explanation instead of a
+ * scary error banner.
+ */
+export function notFoundState({
+  title = 'Recipe not found',
+  message = "This recipe doesn't exist, or may have been removed.",
+} = {}) {
+  return `
+    <div class="empty-state text-center py-5">
+      <i class="bi bi-emoji-frown empty-state-icon"></i>
+      <h5 class="empty-state-title mt-3">${escapeHtml(title)}</h5>
+      <p class="text-secondary mb-3">${escapeHtml(message)}</p>
+      <a href="/" class="btn btn-primary d-inline-flex align-items-center gap-1">
+        <i class="bi bi-arrow-left"></i> Back to recipes
+      </a>
+    </div>`
+}

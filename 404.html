@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Not Found — CookLog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body class="bg-body-tertiary">
+    <div id="navbar"></div>
+
+    <main class="container py-5">
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6 text-center py-5">
+          <i class="bi bi-signpost-split empty-state-icon" style="font-size: 4.5rem;"></i>
+          <h1 class="h2 mt-4 mb-2">404 — Page not found</h1>
+          <p class="text-secondary mb-4">
+            The page you're looking for doesn't exist, or may have moved.
+          </p>
+          <a href="/" class="btn btn-primary d-inline-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i> Back to recipes
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <span class="site-footer-brand"><i class="bi bi-egg-fried"></i> CookLog</span>
+      <span>&copy; 2026 CookLog. Cooked up with care.</span>
+    </footer>
+
+    <script type="module">
+      import 'bootstrap/dist/css/bootstrap.min.css'
+      import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+      import '/src/css/style.css'
+      import { initNavbar } from '/src/components/navbar.js'
+
+      initNavbar('#navbar')
+    </script>
+  </body>
+</html>
