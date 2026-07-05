@@ -64,7 +64,10 @@ function getFiltered() {
 function updateViewButtons() {
   viewScopeButtons.forEach((button) => {
     const isActive = button.dataset.viewScope === activeViewScope
-    button.classList.toggle('active', isActive)
+    // Not `.active` — Bootstrap's own `.btn.active` "pressed" rule has
+    // higher specificity than our `.btn-primary` theme override and would
+    // force its default blue back in, regardless of source order.
+    button.classList.toggle('is-selected', isActive)
     button.classList.toggle('btn-primary', isActive)
     button.classList.toggle('btn-outline-primary', !isActive)
   })
