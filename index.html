@@ -5,6 +5,12 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CookLog — My Recipe Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
@@ -13,47 +19,54 @@
   <body class="bg-body-tertiary">
     <div id="navbar"></div>
 
-    <main class="container py-4 py-md-5">
-      <header class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
-        <div>
-          <h1 class="h3 mb-1"><i class="bi bi-journal-richtext text-primary me-2"></i>Recipes</h1>
-          <p class="text-secondary mb-0">Browse the CookLog community's recipes.</p>
-        </div>
-        <button id="randomBtn" type="button" class="btn btn-outline-primary d-inline-flex align-items-center gap-2">
-          <i class="bi bi-shuffle"></i> Random Recipe
-        </button>
-      </header>
-
-      <div class="row g-2 g-md-3 mb-3">
-        <div class="col-12 col-md-6 col-lg-7">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-search"></i></span>
-            <input
-              type="search"
-              id="searchInput"
-              class="form-control"
-              placeholder="Search recipes by title…"
-              autocomplete="off"
-            />
+    <div class="hero-banner">
+      <div class="hero-inner">
+        <h1 class="hero-title"><i class="bi bi-journal-richtext"></i>Recipes</h1>
+        <p class="hero-subtitle">Browse the CookLog community's recipes.</p>
+        <div class="hero-search-row">
+          <div class="hero-search-box">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input
+                type="search"
+                id="searchInput"
+                class="form-control"
+                placeholder="Search recipes by title…"
+                autocomplete="off"
+              />
+            </div>
           </div>
-        </div>
-        <div class="col-12 col-md-6 col-lg-5">
-          <div class="input-group">
-            <span class="input-group-text"><i class="bi bi-funnel"></i></span>
-            <select id="categoryFilter" class="form-select">
-              <option value="">All categories</option>
-            </select>
+          <div class="hero-filter-box">
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-funnel"></i></span>
+              <select id="categoryFilter" class="form-select">
+                <option value="">All categories</option>
+              </select>
+            </div>
           </div>
+          <button id="randomBtn" type="button" class="btn hero-random-btn d-inline-flex align-items-center gap-2">
+            <i class="bi bi-shuffle"></i> Random Recipe
+          </button>
+          <a href="/src/pages/add-recipe.html" class="btn hero-cta-btn d-inline-flex align-items-center gap-2">
+            <i class="bi bi-plus-circle"></i> Add Recipe
+          </a>
         </div>
       </div>
+    </div>
 
+    <main class="container py-4 py-md-5">
       <div class="d-flex flex-wrap gap-2 mb-4" role="group" aria-label="Recipe list view">
-        <button type="button" class="btn btn-sm btn-outline-primary" data-view-scope="mine">My Recipes</button>
-        <button type="button" class="btn btn-sm btn-outline-primary" data-view-scope="mine-public">My + Public</button>
+        <button type="button" class="btn btn-sm btn-outline-primary view-scope-pill" data-view-scope="mine">My Recipes</button>
+        <button type="button" class="btn btn-sm btn-outline-primary view-scope-pill" data-view-scope="mine-public">My + Public</button>
       </div>
 
       <div id="recipesContainer"><!-- states + grid rendered here --></div>
     </main>
+
+    <footer class="site-footer">
+      <span class="site-footer-brand"><i class="bi bi-egg-fried"></i> CookLog</span>
+      <span>&copy; 2026 CookLog. Cooked up with care.</span>
+    </footer>
 
     <!-- Random recipe modal -->
     <div class="modal fade" id="randomModal" tabindex="-1" aria-hidden="true">
