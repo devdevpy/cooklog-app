@@ -19,19 +19,62 @@ const categoryFilter = document.querySelector('#categoryFilter')
 const randomBtn = document.querySelector('#randomBtn')
 const randomModalEl = document.querySelector('#randomModal')
 const randomModalBody = document.querySelector('#randomModalBody')
+const viewScopeButtons = Array.from(document.querySelectorAll('[data-view-scope]'))
 
 let allRecipes = []
+let currentUserId = null
+let activeViewScope = 'mine-public'
+
+function getInitialViewScope() {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('view') === 'mine' ? 'mine' : 'mine-public'
+}
 
 initNavbar('#navbar')
+
+function getVisibleRecipePool() {
+  if (activeViewScope === 'mine') {
+    return allRecipes.filter((recipe) => recipe.user_id === currentUserId)
+  }
+
+  return allRecipes.filter((recipe) => {
+    if (recipe.user_id === currentUserId) return true
+    return !recipe.is_private
+  })
+}
+
+function getRecipeCategoryId(recipe) {
+  const candidates = [recipe?.category_id, recipe?.categoryId, recipe?.categories?.id]
+  return candidates.find((value) => value !== undefined && value !== null && value !== '')
+}
 
 function getFiltered() {
   const term = searchInput.value.trim().toLowerCase()
   const categoryId = categoryFilter.value
-  return allRecipes.filter((r) => {
-    const matchesCategory = !categoryId || r.category_id === categoryId
-    const matchesSearch = !term || r.title.toLowerCase().includes(term)
+  return getVisibleRecipePool().filter((recipe) => {
+    const matchesCategory = !categoryId || String(getRecipeCategoryId(recipe)) === String(categoryId)
+    const matchesSearch = !term || recipe.title.toLowerCase().includes(term)
     return matchesCategory && matchesSearch
   })
+}
+
+function updateViewButtons() {
+  viewScopeButtons.forEach((button) => {
+    const isActive = button.dataset.viewScope === activeViewScope
+    button.classList.toggle('active', isActive)
+    button.classList.toggle('btn-primary', isActive)
+    button.classList.toggle('btn-outline-primary', !isActive)
+  })
+}
+
+function setViewScope(scope) {
+  activeViewScope = scope
+  const params = new URLSearchParams(window.location.search)
+  params.set('view', scope)
+  const nextUrl = `${window.location.pathname}?${params.toString()}`
+  window.history.replaceState({}, '', nextUrl)
+  updateViewButtons()
+  renderList()
 }
 
 function renderList() {
@@ -61,12 +104,14 @@ async function loadCategories() {
 async function loadRecipes() {
   container.innerHTML = loadingState()
   try {
-    // "My Recipes" for authenticated users: only show the current user's rows.
-    // Anonymous visitors still see the full public browsing list.
     const {
       data: { user },
     } = await supabase.auth.getUser()
-    allRecipes = await getRecipes(user ? { userId: user.id } : {})
+    currentUserId = user?.id ?? null
+
+    allRecipes = await getRecipes()
+    activeViewScope = getInitialViewScope()
+    updateViewButtons()
     renderList()
   } catch (err) {
     console.error('Failed to load recipes:', err)
@@ -95,6 +140,9 @@ searchInput.addEventListener('input', () => {
 })
 categoryFilter.addEventListener('change', renderList)
 randomBtn.addEventListener('click', showRandomRecipe)
+viewScopeButtons.forEach((button) => {
+  button.addEventListener('click', () => setViewScope(button.dataset.viewScope))
+})
 
 loadCategories()
 loadRecipes()

@@ -28,11 +28,10 @@ CREATE POLICY "Anon can view recipes"
   TO anon
   USING (true);
 
--- Authenticated users: only their own rows, or everything if they are admin.
--- `public.is_admin()` is the SECURITY DEFINER helper from
--- 20260702000004_fix_user_roles_recursion.sql and avoids RLS recursion.
-CREATE POLICY "Authenticated can view own or admin all"
+-- Authenticated users: can view their own rows and any public recipe.
+-- Admins can view everything.
+CREATE POLICY "Authenticated can view own or public recipes"
   ON public.recipes
   FOR SELECT
   TO authenticated
-  USING (auth.uid() = user_id OR public.is_admin());
+  USING (auth.uid() = user_id OR NOT is_private OR public.is_admin());
