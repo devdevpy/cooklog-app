@@ -63,17 +63,18 @@ export async function getUser() {
 }
 
 /**
- * Check whether the currently authenticated user has the `admin` role.
- * Returns false when there is no session or when the row is missing.
+ * Check whether a user has the `admin` role, per the `user_roles` table.
+ * Defaults to the currently authenticated user when `userId` is omitted.
+ * Returns false when there is no session/id or when the row is missing.
  */
-export async function isAdmin() {
-  const user = await getUser()
-  if (!user) return false
+export async function isAdmin(userId) {
+  const id = userId ?? (await getUser())?.id
+  if (!id) return false
 
   const { data, error } = await supabase
     .from('user_roles')
     .select('role')
-    .eq('user_id', user.id)
+    .eq('user_id', id)
     .maybeSingle()
 
   if (error) {

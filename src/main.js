@@ -14,6 +14,8 @@ import {
   errorState,
 } from './js/recipesView.js'
 
+const NOTICE_KEY = 'cooklog:notice'
+
 const container = document.querySelector('#recipesContainer')
 const searchInput = document.querySelector('#searchInput')
 const categoryFilter = document.querySelector('#categoryFilter')
@@ -31,7 +33,17 @@ function getInitialViewScope() {
   return params.get('view') === 'mine' ? 'mine' : 'mine-public'
 }
 
+function showStoredNotice() {
+  const message = sessionStorage.getItem(NOTICE_KEY)
+  if (!message) return
+  sessionStorage.removeItem(NOTICE_KEY)
+  const el = document.getElementById('homeNotice')
+  el.textContent = message
+  el.classList.remove('d-none')
+}
+
 initNavbar('#navbar')
+showStoredNotice()
 
 function getVisibleRecipePool() {
   if (activeViewScope === 'mine') {
