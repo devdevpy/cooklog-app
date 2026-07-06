@@ -19,6 +19,7 @@ export default defineConfig({
         cookMode: resolve(__dirname, 'src/pages/cook-mode.html'),
         admin: resolve(__dirname, 'src/pages/admin.html'),
         profile: resolve(__dirname, 'src/pages/profile.html'),
+        favorites: resolve(__dirname, 'src/pages/favorites.html'),
         notFound: resolve(__dirname, '404.html'),
       },
     },

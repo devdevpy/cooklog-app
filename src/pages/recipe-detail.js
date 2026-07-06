@@ -6,6 +6,7 @@ import { initNavbar } from '../components/navbar.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { getRecipeWithDetails, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
+import { addFavorite, removeFavorite, isFavorite } from '../services/favorites.js'
 import { showToast, storeToast, consumeStoredToast } from '../js/toast.js'
 import { notFoundState } from '../js/recipesView.js'
 
@@ -39,6 +40,11 @@ async function loadRecipe() {
 
     if (canManage) {
       wireManagementActions(recipe)
+    }
+
+    if (user) {
+      const favorited = await isFavorite(recipe.id, user.id)
+      wireFavoriteButton(recipe.id, favorited)
     }
   } catch (error) {
     console.error('Failed to load recipe:', error)
@@ -135,7 +141,18 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
               }
             </div>
 
-            <h1 class="h2 mb-3">${escapeHtml(recipe.title)}</h1>
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
+              <h1 class="h2 mb-0">${escapeHtml(recipe.title)}</h1>
+              <button
+                type="button"
+                id="favoriteBtn"
+                class="btn favorite-btn d-none"
+                aria-label="Add to favorites"
+                title="Add to favorites"
+              >
+                <i class="bi bi-heart"></i>
+              </button>
+            </div>
             <p class="text-secondary mb-4">${escapeHtml(recipe.description || '')}</p>
 
             <div class="d-flex gap-4 mb-4 text-secondary flex-wrap">
@@ -216,6 +233,45 @@ function wireManagementActions(recipe) {
       showToast(error.message || 'Failed to delete recipe.', 'danger')
       confirmBtn.disabled = false
       confirmBtn.innerHTML = `<i class="bi bi-trash me-1"></i> Delete`
+    }
+  })
+}
+
+function wireFavoriteButton(recipeId, initiallyFavorited) {
+  const btn = document.getElementById('favoriteBtn')
+  if (!btn) return
+
+  btn.classList.remove('d-none')
+  const icon = btn.querySelector('i')
+  let favorited = initiallyFavorited
+
+  function paint() {
+    icon.className = favorited ? 'bi bi-heart-fill' : 'bi bi-heart'
+    btn.classList.toggle('is-favorited', favorited)
+    const label = favorited ? 'Remove from favorites' : 'Add to favorites'
+    btn.setAttribute('aria-label', label)
+    btn.title = label
+  }
+  paint()
+
+  btn.addEventListener('click', async () => {
+    btn.disabled = true
+    try {
+      if (favorited) {
+        await removeFavorite(recipeId)
+        favorited = false
+        showToast('Removed from favorites.', 'success')
+      } else {
+        await addFavorite(recipeId)
+        favorited = true
+        showToast('Added to favorites.', 'success')
+      }
+      paint()
+    } catch (error) {
+      console.error('Failed to update favorite:', error)
+      showToast(error.message || 'Failed to update favorites.', 'danger')
+    } finally {
+      btn.disabled = false
     }
   })
 }
