@@ -39,7 +39,33 @@
               <i class="bi bi-person-circle"></i>
             </div>
             <div class="flex-grow-1 text-center text-sm-start">
-              <h2 class="h4 mb-1" id="profileFullName">—</h2>
+              <div class="d-flex align-items-center justify-content-center justify-content-sm-start gap-2 mb-1" id="fullNameDisplay">
+                <h2 class="h4 mb-0" id="profileFullName">—</h2>
+                <button type="button" class="btn btn-sm btn-link text-secondary p-0" id="editNameBtn" aria-label="Edit name">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+              <form id="editNameForm" class="d-none mb-1" novalidate>
+                <div class="input-group input-group-sm mx-auto mx-sm-0" style="max-width: 280px;">
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="fullNameInput"
+                    name="fullName"
+                    required
+                    minlength="2"
+                    autocomplete="name"
+                  />
+                  <button type="submit" class="btn btn-primary" id="saveNameBtn" aria-label="Save name">
+                    <span class="spinner-border spinner-border-sm d-none" id="saveNameSpinner" role="status" aria-hidden="true"></span>
+                    <i class="bi bi-check-lg" id="saveNameIcon"></i>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary" id="cancelNameBtn" aria-label="Cancel">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+                <div class="invalid-feedback d-block" id="nameError"></div>
+              </form>
               <p class="text-secondary small mb-3">Your CookLog profile</p>
               <label for="avatarInput" class="btn btn-outline-primary btn-sm mb-0">
                 <i class="bi bi-camera me-1"></i> Change avatar

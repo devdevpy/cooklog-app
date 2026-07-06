@@ -5,7 +5,7 @@ import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
 import { initBackToTop } from '../components/back-to-top.js'
 import { getUser } from '../services/auth.js'
-import { getProfile, updateAvatarUrl } from '../services/profiles.js'
+import { getProfile, updateAvatarUrl, updateFullName } from '../services/profiles.js'
 import { getRecipes, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
 import { uploadAvatar } from '../services/avatarStorage.js'
@@ -85,6 +85,67 @@ function wireAvatarUpload(userId) {
   })
 }
 
+function wireNameEdit(userId, initialName) {
+  const displayRow = document.getElementById('fullNameDisplay')
+  const nameEl = document.getElementById('profileFullName')
+  const form = document.getElementById('editNameForm')
+  const input = document.getElementById('fullNameInput')
+  const editBtn = document.getElementById('editNameBtn')
+  const cancelBtn = document.getElementById('cancelNameBtn')
+  const saveBtn = document.getElementById('saveNameBtn')
+  const saveSpinner = document.getElementById('saveNameSpinner')
+  const saveIcon = document.getElementById('saveNameIcon')
+  const errorEl = document.getElementById('nameError')
+
+  let currentName = initialName
+
+  function enterEditMode() {
+    input.value = currentName
+    errorEl.textContent = ''
+    form.classList.remove('was-validated')
+    displayRow.classList.add('d-none')
+    form.classList.remove('d-none')
+    input.focus()
+  }
+
+  function exitEditMode() {
+    form.classList.add('d-none')
+    displayRow.classList.remove('d-none')
+  }
+
+  editBtn.addEventListener('click', enterEditMode)
+  cancelBtn.addEventListener('click', exitEditMode)
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated')
+      return
+    }
+
+    const nextName = input.value.trim()
+    saveBtn.disabled = true
+    cancelBtn.disabled = true
+    saveSpinner.classList.remove('d-none')
+    saveIcon.classList.add('d-none')
+    try {
+      await updateFullName(userId, nextName)
+      currentName = nextName
+      nameEl.textContent = nextName
+      exitEditMode()
+      showToast('Name updated.', 'success')
+    } catch (error) {
+      console.error('Failed to update name:', error)
+      errorEl.textContent = error.message || 'Failed to update name.'
+    } finally {
+      saveBtn.disabled = false
+      cancelBtn.disabled = false
+      saveSpinner.classList.add('d-none')
+      saveIcon.classList.remove('d-none')
+    }
+  })
+}
+
 function wireDeleteModal() {
   const modalEl = document.getElementById('deleteRecipeModal')
   const modal = Modal.getOrCreateInstance(modalEl)
@@ -143,8 +204,9 @@ async function init() {
     ])
     myRecipes = recipes
 
-    document.getElementById('profileFullName').textContent =
-      profile.full_name || user.email || 'Unnamed user'
+    const displayName = profile.full_name || user.email || 'Unnamed user'
+    document.getElementById('profileFullName').textContent = displayName
+    wireNameEdit(user.id, displayName)
     setupImagePreview(
       document.getElementById('avatarInput'),
       document.getElementById('avatarPreview'),

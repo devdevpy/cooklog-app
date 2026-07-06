@@ -27,3 +27,19 @@ export async function updateAvatarUrl(userId, avatarUrl) {
 
   if (error) throw error
 }
+
+/**
+ * Update the current user's display name in both places it's read from:
+ * `profiles.full_name` (recipe author attribution, admin user list) and
+ * the auth user's metadata (navbar.js reads `user.user_metadata.full_name`,
+ * not the profiles table). Updating auth metadata fires a `USER_UPDATED`
+ * event that the navbar's `onAuthStateChange` listener already handles, so
+ * the navbar refreshes on its own.
+ */
+export async function updateFullName(userId, fullName) {
+  const { error: authError } = await supabase.auth.updateUser({ data: { full_name: fullName } })
+  if (authError) throw authError
+
+  const { error } = await supabase.from('profiles').update({ full_name: fullName }).eq('id', userId)
+  if (error) throw error
+}
