@@ -9,6 +9,7 @@ const ROUTES = {
   addRecipe: '/src/pages/add-recipe.html',
   admin: '/src/pages/admin.html',
   profile: '/src/pages/profile.html',
+  favorites: '/src/pages/favorites.html',
 }
 
 function aboutLink() {
@@ -81,6 +82,11 @@ function loggedInMenu(user, admin) {
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.addRecipe}">
         <i class="bi bi-plus-circle"></i> Add Recipe
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.favorites}">
+        <i class="bi bi-heart"></i> Favorites
       </a>
     </li>
     ${adminLink}

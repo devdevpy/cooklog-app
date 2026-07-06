@@ -839,6 +839,30 @@ a:hover {
 }
 
 /* ---------------------------------------------------------------------- *
+ * Favorite (heart) button — recipe detail page
+ * ---------------------------------------------------------------------- */
+
+.favorite-btn {
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+.favorite-btn:hover,
+.favorite-btn:focus {
+  background: transparent;
+  color: #DC2626;
+  transform: scale(1.08);
+}
+.favorite-btn.is-favorited {
+  color: #DC2626;
+}
+
+/* ---------------------------------------------------------------------- *
  * Start Cooking button (recipe detail page)
  * ---------------------------------------------------------------------- */
 
