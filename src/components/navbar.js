@@ -1,5 +1,6 @@
 import { supabase } from '../js/supabaseClient.js'
-import { signOut, isAdmin } from '../services/auth.js'
+import { signOut, isAdmin, getAccountStatus, accountStatusMessage } from '../services/auth.js'
+import { storeToast } from '../js/toast.js'
 
 const ROUTES = {
   home: '/',
@@ -125,6 +126,26 @@ async function updateMenu(root, user) {
 }
 
 /**
+ * Signs out and redirects to login any already-logged-in user whose account
+ * has since been restricted or soft-deleted by an admin (see
+ * services/admin.js). Runs on every page since `initNavbar` is universal —
+ * this is the single enforcement point for existing sessions (new sign-ins
+ * are separately blocked in `signIn`).  Returns false when the caller should
+ * stop (a redirect is in flight).
+ */
+async function enforceAccountStatus(user) {
+  if (!user) return true
+
+  const status = await getAccountStatus(user.id)
+  if (!status.restricted && !status.deleted) return true
+
+  await signOut()
+  storeToast(accountStatusMessage(status), 'danger')
+  window.location.href = ROUTES.login
+  return false
+}
+
+/**
  * Render the shared navbar into `selector` and keep it in sync with the
  * Supabase auth state via onAuthStateChange.
  */
@@ -138,6 +159,9 @@ export async function initNavbar(selector = '#navbar') {
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  if (!(await enforceAccountStatus(user))) return
+
   await updateMenu(root, user)
 
   // Keep in sync with future auth changes (login / logout / token refresh)

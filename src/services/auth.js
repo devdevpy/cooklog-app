@@ -32,7 +32,8 @@ export async function signUp({ email, password, fullName }) {
 }
 
 /**
- * Sign in an existing user with email + password.
+ * Sign in an existing user with email + password. Rejects (and signs back
+ * out) restricted or deleted accounts — see `getAccountStatus`.
  */
 export async function signIn({ email, password }) {
   const { data, error } = await supabase.auth.signInWithPassword({
@@ -41,6 +42,13 @@ export async function signIn({ email, password }) {
   })
 
   if (error) throw error
+
+  const status = await getAccountStatus(data.user.id)
+  if (status.restricted || status.deleted) {
+    await supabase.auth.signOut()
+    throw new Error(accountStatusMessage(status))
+  }
+
   return data
 }
 
@@ -82,4 +90,37 @@ export async function isAdmin(userId) {
     return false
   }
   return data?.role === 'admin'
+}
+
+/**
+ * Check whether a user is temporarily restricted or soft-deleted, per the
+ * admin panel's "Restrict"/"Delete" actions (see services/admin.js).
+ * `restricted` only reflects `restricted_until` while it's in the future.
+ */
+export async function getAccountStatus(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('restricted_until, deleted_at')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (error) {
+    console.error('Failed to load account status:', error)
+    return { restricted: false, deleted: false, restrictedUntil: null }
+  }
+
+  const restrictedUntil = data?.restricted_until ?? null
+  return {
+    restricted: Boolean(restrictedUntil) && new Date(restrictedUntil) > new Date(),
+    deleted: Boolean(data?.deleted_at),
+    restrictedUntil,
+  }
+}
+
+/**
+ * User-facing message for a blocked (restricted/deleted) account status.
+ */
+export function accountStatusMessage(status) {
+  if (status.deleted) return 'This account has been deleted.'
+  return `This account is restricted until ${new Date(status.restrictedUntil).toLocaleDateString()}.`
 }

@@ -5,7 +5,15 @@ import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
 import { initBackToTop } from '../components/back-to-top.js'
 import { getUser, isAdmin } from '../services/auth.js'
-import { getUsersWithRoles, setUserRole, getAdminStats } from '../services/admin.js'
+import {
+  getUsersWithRoles,
+  setUserRole,
+  getAdminStats,
+  restrictUser,
+  liftRestriction,
+  softDeleteUser,
+  restoreUser,
+} from '../services/admin.js'
 import { showToast, storeToast } from '../js/toast.js'
 import {
   getCategories,
@@ -232,24 +240,58 @@ document.getElementById('categoriesTableBody').addEventListener('click', (e) => 
 
 let currentAdminId = null
 
+function isCurrentlyRestricted(u) {
+  return Boolean(u.restrictedUntil) && new Date(u.restrictedUntil) > new Date()
+}
+
+function userStatusBadge(u) {
+  if (u.deletedAt) {
+    return '<span class="badge bg-danger-subtle text-danger ms-1">Deleted</span>'
+  }
+  if (isCurrentlyRestricted(u)) {
+    return `<span class="badge bg-warning-subtle text-warning-emphasis ms-1">Restricted until ${formatDate(u.restrictedUntil)}</span>`
+  }
+  return ''
+}
+
 function userRowHtml(u) {
   const isSelf = u.id === currentAdminId
   const isAdminRole = u.role === 'admin'
+  const isDeleted = Boolean(u.deletedAt)
+  const isRestricted = isCurrentlyRestricted(u)
+  const name = escapeHtml(u.fullName || 'Unnamed user')
   return `
     <tr>
       <td>
-        ${escapeHtml(u.fullName || 'Unnamed user')}
+        ${name}
         ${isSelf ? '<span class="badge bg-secondary-subtle text-secondary ms-1">You</span>' : ''}
+        ${userStatusBadge(u)}
       </td>
       <td>${formatDate(u.createdAt)}</td>
       <td><span class="badge ${isAdminRole ? 'bg-primary' : 'bg-secondary-subtle text-secondary'}">${u.role}</span></td>
-      <td class="text-end">
+      <td class="text-end text-nowrap">
         <button type="button"
-          class="btn btn-sm ${isAdminRole ? 'btn-outline-danger' : 'btn-outline-primary'} toggle-role-btn d-inline-flex align-items-center gap-1"
+          class="btn btn-sm ${isAdminRole ? 'btn-outline-danger' : 'btn-outline-primary'} toggle-role-btn d-inline-flex align-items-center gap-1 mb-1"
           data-id="${u.id}" data-role="${u.role}"
-          ${isSelf ? 'disabled title="You can\'t change your own role"' : ''}>
+          ${isSelf || isDeleted ? 'disabled' : ''}
+          ${isSelf ? 'title="You can\'t change your own role"' : ''}>
           <i class="bi ${isAdminRole ? 'bi-shield-slash' : 'bi-shield-check'}"></i>
           ${isAdminRole ? 'Revoke admin' : 'Make admin'}
+        </button>
+        <button type="button"
+          class="btn btn-sm ${isRestricted ? 'btn-outline-success' : 'btn-outline-warning'} restrict-user-btn d-inline-flex align-items-center gap-1 mb-1"
+          data-id="${u.id}" data-name="${name}" data-restricted="${isRestricted}"
+          ${isSelf || isDeleted ? 'disabled' : ''}
+          ${isSelf ? 'title="You can\'t restrict yourself"' : ''}>
+          <i class="bi ${isRestricted ? 'bi-unlock' : 'bi-slash-circle'}"></i>
+          ${isRestricted ? 'Lift restriction' : 'Restrict'}
+        </button>
+        <button type="button"
+          class="btn btn-sm ${isDeleted ? 'btn-outline-success' : 'btn-outline-danger'} delete-user-btn d-inline-flex align-items-center gap-1 mb-1"
+          data-id="${u.id}" data-name="${name}" data-deleted="${isDeleted}"
+          ${isSelf ? 'disabled title="You can\'t delete yourself"' : ''}>
+          <i class="bi ${isDeleted ? 'bi-arrow-counterclockwise' : 'bi-person-x'}"></i>
+          ${isDeleted ? 'Restore' : 'Delete'}
         </button>
       </td>
     </tr>`
@@ -270,25 +312,142 @@ async function loadUsersTable() {
   }
 }
 
+const restrictUserModalEl = document.getElementById('restrictUserModal')
+const restrictUserModal = Modal.getOrCreateInstance(restrictUserModalEl)
+const restrictUserBody = document.getElementById('restrictUserBody')
+
+function openRestrictUserModal(userId, name) {
+  restrictUserBody.innerHTML = `
+    <p class="mb-3">Choose how long to restrict "<strong>${escapeHtml(name)}</strong>" from using CookLog:</p>
+    <div class="d-flex flex-wrap gap-2">
+      <button type="button" class="btn btn-outline-warning restrict-duration-btn" data-days="1">1 day</button>
+      <button type="button" class="btn btn-outline-warning restrict-duration-btn" data-days="7">7 days</button>
+      <button type="button" class="btn btn-outline-warning restrict-duration-btn" data-days="30">30 days</button>
+    </div>`
+  restrictUserModal.show()
+
+  restrictUserBody.querySelectorAll('.restrict-duration-btn').forEach((durationBtn) => {
+    durationBtn.addEventListener('click', async () => {
+      const days = Number(durationBtn.dataset.days)
+      const until = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+      restrictUserBody.querySelectorAll('button').forEach((b) => (b.disabled = true))
+      try {
+        await restrictUser(userId, until)
+        restrictUserModal.hide()
+        showToast(`"${name}" restricted for ${days} day${days === 1 ? '' : 's'}.`, 'success')
+        await loadUsersTable()
+      } catch (err) {
+        console.error('Failed to restrict user:', err)
+        showToast(err?.message || 'Failed to restrict user.', 'danger')
+        restrictUserBody.querySelectorAll('button').forEach((b) => (b.disabled = false))
+      }
+    })
+  })
+}
+
+const deleteUserModalEl = document.getElementById('deleteUserModal')
+const deleteUserModal = Modal.getOrCreateInstance(deleteUserModalEl)
+const deleteUserBody = document.getElementById('deleteUserBody')
+const deleteUserFooter = document.getElementById('deleteUserFooter')
+
+function openDeleteUserModal(userId, name) {
+  deleteUserBody.innerHTML = `
+    <p class="mb-0">
+      Are you sure you want to delete "<strong>${escapeHtml(name)}</strong>"? They will immediately lose
+      access to CookLog. Their recipes are kept, and this can be undone later by restoring them.
+    </p>`
+  deleteUserFooter.innerHTML = `
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-danger" id="confirmDeleteUserBtn"><i class="bi bi-person-x me-1"></i> Delete</button>`
+  deleteUserModal.show()
+
+  document.getElementById('confirmDeleteUserBtn').addEventListener('click', async (e) => {
+    const btn = e.currentTarget
+    btn.disabled = true
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Deleting...`
+    try {
+      await softDeleteUser(userId)
+      deleteUserModal.hide()
+      showToast(`"${name}" deleted.`, 'success')
+      await loadUsersTable()
+    } catch (err) {
+      console.error('Failed to delete user:', err)
+      btn.disabled = false
+      btn.innerHTML = `<i class="bi bi-person-x me-1"></i> Delete`
+      showToast(err?.message || 'Failed to delete user.', 'danger')
+    }
+  })
+}
+
 document.getElementById('usersTableBody').addEventListener('click', async (e) => {
-  const btn = e.target.closest('.toggle-role-btn')
-  if (!btn) return
+  const roleBtn = e.target.closest('.toggle-role-btn')
+  if (roleBtn) {
+    const userId = roleBtn.dataset.id
+    const nextRole = roleBtn.dataset.role === 'admin' ? 'user' : 'admin'
 
-  const userId = btn.dataset.id
-  const nextRole = btn.dataset.role === 'admin' ? 'user' : 'admin'
+    roleBtn.disabled = true
+    const originalHtml = roleBtn.innerHTML
+    roleBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
+    try {
+      await setUserRole(userId, nextRole)
+      showToast(`Role updated to "${nextRole}".`, 'success')
+      await loadUsersTable()
+    } catch (err) {
+      console.error('Failed to update role:', err)
+      roleBtn.disabled = false
+      roleBtn.innerHTML = originalHtml
+      showToast(err?.message || 'Failed to update role.', 'danger')
+    }
+    return
+  }
 
-  btn.disabled = true
-  const originalHtml = btn.innerHTML
-  btn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
-  try {
-    await setUserRole(userId, nextRole)
-    showToast(`Role updated to "${nextRole}".`, 'success')
-    await loadUsersTable()
-  } catch (err) {
-    console.error('Failed to update role:', err)
-    btn.disabled = false
-    btn.innerHTML = originalHtml
-    showToast(err?.message || 'Failed to update role.', 'danger')
+  const restrictBtn = e.target.closest('.restrict-user-btn')
+  if (restrictBtn) {
+    const userId = restrictBtn.dataset.id
+    const name = restrictBtn.dataset.name
+    if (restrictBtn.dataset.restricted !== 'true') {
+      openRestrictUserModal(userId, name)
+      return
+    }
+
+    restrictBtn.disabled = true
+    const originalHtml = restrictBtn.innerHTML
+    restrictBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
+    try {
+      await liftRestriction(userId)
+      showToast(`Restriction lifted for "${name}".`, 'success')
+      await loadUsersTable()
+    } catch (err) {
+      console.error('Failed to lift restriction:', err)
+      restrictBtn.disabled = false
+      restrictBtn.innerHTML = originalHtml
+      showToast(err?.message || 'Failed to lift restriction.', 'danger')
+    }
+    return
+  }
+
+  const deleteBtn = e.target.closest('.delete-user-btn')
+  if (deleteBtn) {
+    const userId = deleteBtn.dataset.id
+    const name = deleteBtn.dataset.name
+    if (deleteBtn.dataset.deleted !== 'true') {
+      openDeleteUserModal(userId, name)
+      return
+    }
+
+    deleteBtn.disabled = true
+    const originalHtml = deleteBtn.innerHTML
+    deleteBtn.innerHTML = `<span class="spinner-border spinner-border-sm"></span>`
+    try {
+      await restoreUser(userId)
+      showToast(`"${name}" restored.`, 'success')
+      await loadUsersTable()
+    } catch (err) {
+      console.error('Failed to restore user:', err)
+      deleteBtn.disabled = false
+      deleteBtn.innerHTML = originalHtml
+      showToast(err?.message || 'Failed to restore user.', 'danger')
+    }
   }
 })
 

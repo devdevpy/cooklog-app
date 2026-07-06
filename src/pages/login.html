@@ -105,9 +105,11 @@
       import { initNavbar } from '/src/components/navbar.js'
       import { initBackToTop } from '/src/components/back-to-top.js'
       import { signIn } from '/src/services/auth.js'
+      import { consumeStoredToast } from '/src/js/toast.js'
 
       initNavbar('#navbar')
       initBackToTop()
+      consumeStoredToast()
 
       const form = document.getElementById('loginForm')
       const alertBox = document.getElementById('formAlert')
