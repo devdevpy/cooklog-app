@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
+import { initBackToTop } from '../components/back-to-top.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { uploadRecipeImage, deleteRecipeImage } from '../services/storage.js'
 import { getRecipeWithDetails, updateRecipe } from '../services/recipes.js'
@@ -108,6 +109,7 @@ async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
 
 async function init() {
   await initNavbar()
+  initBackToTop()
 
   const params = new URLSearchParams(window.location.search)
   const recipeId = params.get('id')

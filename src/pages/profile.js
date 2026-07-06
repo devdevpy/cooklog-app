@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { Modal } from 'bootstrap'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
+import { initBackToTop } from '../components/back-to-top.js'
 import { getUser } from '../services/auth.js'
 import { getProfile, updateAvatarUrl } from '../services/profiles.js'
 import { getRecipes, deleteRecipe } from '../services/recipes.js'
@@ -131,6 +132,7 @@ function wireDeleteModal() {
 
 async function init() {
   await initNavbar()
+  initBackToTop()
   const user = await checkAuth()
   if (!user) return
 
