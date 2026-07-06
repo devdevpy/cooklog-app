@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About — CookLog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+    />
+  </head>
+  <body class="bg-body-tertiary">
+    <div id="navbar"></div>
+
+    <section class="about-hero">
+      <div class="about-hero-inner">
+        <h1 class="about-hero-title">Your Personal Recipe Journal</h1>
+        <p class="about-hero-subtitle">
+          Collect, organize and cook your favorite recipes in one beautiful place.
+        </p>
+        <div class="about-hero-actions">
+          <a href="/src/pages/register.html" class="btn about-btn-accent d-inline-flex align-items-center gap-2">
+            <i class="bi bi-person-plus"></i> Get Started
+          </a>
+          <a href="/" class="btn about-btn-outline d-inline-flex align-items-center gap-2">
+            <i class="bi bi-journal-richtext"></i> Browse Recipes
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <main>
+      <section class="container py-5 py-md-5">
+        <h2 class="text-center h1 mb-5">Everything you need</h2>
+        <div class="row g-4">
+          <div class="col-12 col-md-4">
+            <div class="feature-card">
+              <span class="feature-card-icon">🍳</span>
+              <h3 class="feature-card-title h5">Save Recipes</h3>
+              <p class="feature-card-text">
+                Store all your recipes with photos, ingredients and steps.
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="feature-card">
+              <span class="feature-card-icon">🔍</span>
+              <h3 class="feature-card-title h5">Find Instantly</h3>
+              <p class="feature-card-text">
+                Search and filter by category, time or ingredient.
+              </p>
+            </div>
+          </div>
+          <div class="col-12 col-md-4">
+            <div class="feature-card">
+              <span class="feature-card-icon">❤️</span>
+              <h3 class="feature-card-title h5">Mark Favorites</h3>
+              <p class="feature-card-text">
+                Save your go-to recipes for quick access.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="how-it-works-section py-5">
+        <div class="container py-md-4">
+          <h2 class="text-center h1 mb-5">How it works</h2>
+          <div class="row g-4 text-center">
+            <div class="col-12 col-md-4">
+              <div class="step-number">1</div>
+              <p class="step-text">Create your free account</p>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="step-number">2</div>
+              <p class="step-text">Add your first recipe with a photo</p>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="step-number">3</div>
+              <p class="step-text">Cook and enjoy!</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-cta-banner">
+        <h2 class="about-cta-title">Ready to start cooking?</h2>
+        <a href="/src/pages/register.html" class="btn about-btn-accent d-inline-flex align-items-center gap-2">
+          <i class="bi bi-egg-fried"></i> Join CookLog Free
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span class="site-footer-brand"><i class="bi bi-egg-fried"></i> CookLog</span>
+      <span>&copy; 2026 CookLog. Cooked up with care.</span>
+    </footer>
+
+    <script type="module">
+      import 'bootstrap/dist/css/bootstrap.min.css'
+      import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+      import '/src/css/style.css'
+      import { initNavbar } from '/src/components/navbar.js'
+
+      initNavbar('#navbar')
+    </script>
+  </body>
+</html>
