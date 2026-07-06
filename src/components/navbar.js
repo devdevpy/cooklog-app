@@ -3,11 +3,21 @@ import { signOut, isAdmin } from '../services/auth.js'
 
 const ROUTES = {
   home: '/',
+  about: '/src/pages/about.html',
   login: '/src/pages/login.html',
   register: '/src/pages/register.html',
   addRecipe: '/src/pages/add-recipe.html',
   admin: '/src/pages/admin.html',
   profile: '/src/pages/profile.html',
+}
+
+function aboutLink() {
+  return `
+    <li class="nav-item">
+      <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.about}">
+        <i class="bi bi-info-circle"></i> About
+      </a>
+    </li>`
 }
 
 function displayName(user) {
@@ -39,6 +49,7 @@ function renderMarkup() {
 
 function loggedOutMenu() {
   return `
+    ${aboutLink()}
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.login}">
         <i class="bi bi-box-arrow-in-right"></i> Login
@@ -61,6 +72,7 @@ function loggedInMenu(user, admin) {
     </li>`
     : ''
   return `
+    ${aboutLink()}
     <li class="nav-item">
       <a class="nav-link d-flex align-items-center gap-1" href="${ROUTES.home}?view=mine">
         <i class="bi bi-journal-richtext"></i> My Recipes

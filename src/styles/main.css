@@ -684,6 +684,161 @@ a:hover {
 }
 
 /* ---------------------------------------------------------------------- *
+ * About / landing page
+ * ---------------------------------------------------------------------- */
+
+.about-hero {
+  position: relative;
+  min-height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background:
+    linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255, 255, 255, 0.04) 0px,
+      rgba(255, 255, 255, 0.04) 2px,
+      transparent 2px,
+      transparent 14px
+    );
+  overflow: hidden;
+}
+
+.about-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  padding: 2rem 1.5rem;
+}
+
+.about-hero-title {
+  font-family: var(--font-heading);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  margin-bottom: 1rem;
+}
+
+.about-hero-subtitle {
+  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.15rem;
+  margin-bottom: 2.5rem;
+}
+
+.about-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.about-btn-accent,
+.about-btn-outline {
+  border-radius: 999px;
+  font-weight: 700;
+  padding: 0.75rem 2rem;
+}
+
+.about-btn-accent {
+  background: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+  color: var(--color-primary);
+}
+.about-btn-accent:hover,
+.about-btn-accent:focus {
+  background: var(--color-accent-light);
+  border-color: var(--color-accent-light);
+  color: var(--color-primary);
+}
+
+.about-btn-outline {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  color: #fff;
+}
+.about-btn-outline:hover,
+.about-btn-outline:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #fff;
+  color: #fff;
+}
+
+@media (max-width: 767px) {
+  .about-hero {
+    min-height: 320px;
+  }
+}
+
+.feature-card {
+  height: 100%;
+  padding: 2.5rem 1.75rem;
+  text-align: center;
+  background: var(--color-bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.feature-card-icon {
+  display: block;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.feature-card-title {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+.feature-card-text {
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+.how-it-works-section {
+  background: #F5F5F0;
+}
+
+.step-number {
+  font-family: var(--font-heading);
+  color: var(--color-accent);
+  font-weight: 700;
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 0.75rem;
+}
+
+.step-text {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  font-size: 1.05rem;
+  margin-bottom: 0;
+}
+
+.about-cta-banner {
+  text-align: center;
+  padding: 4rem 1rem;
+  background: var(--color-primary);
+}
+
+.about-cta-title {
+  font-family: var(--font-heading);
+  color: #fff;
+  font-weight: 700;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin-bottom: 1.75rem;
+}
+
+/* ---------------------------------------------------------------------- *
  * Profile page
  * ---------------------------------------------------------------------- */
 
