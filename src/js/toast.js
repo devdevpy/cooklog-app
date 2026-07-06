@@ -11,6 +11,52 @@ const VARIANTS = {
   warning: { icon: 'bi-exclamation-circle-fill', bg: 'text-bg-warning' },
 }
 
+let audioCtx = null
+
+function getAudioContext() {
+  const Ctor = window.AudioContext ?? window.webkitAudioContext
+  if (!Ctor) return null
+  if (!audioCtx) audioCtx = new Ctor()
+  if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {})
+  return audioCtx
+}
+
+// Soft, short tones so a toast is noticeable without being jarring.
+// Success/warning use a quick rising chime; danger uses a lower single tone.
+const SOUND_NOTES = {
+  success: [660, 880],
+  warning: [660, 880],
+  danger: [330],
+}
+
+function playToastSound(type) {
+  const ctx = getAudioContext()
+  if (!ctx) return
+
+  const notes = SOUND_NOTES[type] ?? SOUND_NOTES.success
+  const noteDuration = 0.11
+  const gap = 0.09
+
+  notes.forEach((freq, index) => {
+    const startAt = ctx.currentTime + index * gap
+    const oscillator = ctx.createOscillator()
+    const gainNode = ctx.createGain()
+
+    oscillator.type = 'sine'
+    oscillator.frequency.setValueAtTime(freq, startAt)
+
+    gainNode.gain.setValueAtTime(0, startAt)
+    gainNode.gain.linearRampToValueAtTime(0.08, startAt + 0.01)
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, startAt + noteDuration)
+
+    oscillator.connect(gainNode)
+    gainNode.connect(ctx.destination)
+
+    oscillator.start(startAt)
+    oscillator.stop(startAt + noteDuration + 0.02)
+  })
+}
+
 function escapeHtml(value) {
   return String(value ?? '')
     .replace(/&/g, '&amp;')
@@ -59,6 +105,12 @@ export function showToast(message, type = 'success') {
   const toast = new Toast(toastEl, { delay: 5000 })
   toastEl.addEventListener('hidden.bs.toast', () => toastEl.remove())
   toast.show()
+
+  try {
+    playToastSound(type)
+  } catch {
+    // Ignore audio failures (e.g. autoplay restrictions) — toast still shows visually.
+  }
 }
 
 /**
