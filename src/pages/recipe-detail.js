@@ -153,6 +153,13 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
               </div>
             </div>
 
+            <div class="d-grid d-sm-flex mb-4">
+              <a href="/src/pages/cook-mode.html?id=${escapeHtml(recipe.id)}"
+                 class="btn start-cooking-btn btn-lg d-inline-flex align-items-center justify-content-center gap-2">
+                🍳 Start Cooking
+              </a>
+            </div>
+
             <hr class="my-4">
 
             <h3 class="h5 mb-3 section-header">
