@@ -1,6 +1,4 @@
-import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-import './css/style.css'
 import { Modal } from 'bootstrap'
 import { initNavbar } from './components/navbar.js'
 import { initBackToTop } from './components/back-to-top.js'
