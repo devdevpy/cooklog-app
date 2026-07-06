@@ -44,7 +44,7 @@ const recipes = [
   ['Maple Glazed Carrots', 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80'],
   ['Soft Fluffy Pancakes', 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80'],
   ['Turkey and Veggie Wraps', 'https://images.unsplash.com/photo-1529042410759-befb1204b468?auto=format&fit=crop&w=1200&q=80'],
-  ['Slow Simmered Beef Stew', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80'],
+  ['Slow Simmered Beef Stew', 'https://images.unsplash.com/photo-1464219551459-ac14b8c1a8a6?auto=format&fit=crop&w=1200&q=80'],
   ['Creamy Potato Leek Soup', 'https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=1200&q=80'],
   ['Greek Pasta Salad', 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=80'],
   ['Homemade Trail Mix', 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80'],
