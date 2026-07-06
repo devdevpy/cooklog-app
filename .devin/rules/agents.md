@@ -4,7 +4,7 @@ trigger: always_on
 # CookLog (RecipeVault) — Agent Instructions
 
 ## Project Overview
-CookLog is a personal recipe tracker web application. Users can create, view, edit, and delete their own recipes (with images, ingredients, and step-by-step instructions), organize recipes by category, search and filter the recipe list, and manage their profile. Admin users can manage categories and user roles through an admin panel.
+CookLog is a personal recipe tracker web application. Users can create, view, edit, and delete their own recipes (with images, ingredients, and step-by-step instructions), mark a recipe as private, organize recipes by category, search and filter the recipe list, favorite recipes, and manage their profile. Admin users can manage categories, user roles, recipes, and user accounts (temporary restriction / soft delete) through an admin panel.
 
 ## Tech Stack
 - Vanilla JavaScript (ES6+ modules) — no frontend framework (no React, Vue, or Angular)
@@ -24,16 +24,17 @@ CookLog is a personal recipe tracker web application. Users can create, view, ed
 - Initialize the Supabase client once in `src/js/supabaseClient.js` and import it wherever needed — never re-initialize elsewhere
 - Store Supabase URL and anon key in `.env` using Vite env variables (`import.meta.env.VITE_SUPABASE_URL`, `import.meta.env.VITE_SUPABASE_ANON_KEY`)
 - `.env` must always be in `.gitignore` — never hardcode credentials in source files
-- All six tables have Row Level Security (RLS) enabled — never disable or bypass RLS
+- All seven tables have Row Level Security (RLS) enabled — never disable or bypass RLS
 
 ## Database Schema (Supabase Postgres)
-Six tables:
-- `profiles` — linked 1:1 to auth.users
+Seven tables:
+- `profiles` — linked 1:1 to auth.users; includes `restricted_until`/`deleted_at` for admin-controlled temporary restriction and soft delete
 - `user_roles` — assigns role (user/admin) per user
 - `categories` — readable by all, writable only by admins
-- `recipes` — owned by a user, linked to a category
+- `recipes` — owned by a user, linked to a category; `is_private` controls whether it's visible to other users
 - `ingredients` — linked to a recipe
 - `recipe_steps` — ordered steps linked to a recipe
+- `favorites` — join table bookmarking a user's saved recipes
 
 ## Coding Conventions
 - ES6+ syntax: `async/await`, `const`/`let`, arrow functions, template literals
