@@ -16,6 +16,7 @@ export default defineConfig({
         addRecipe: resolve(__dirname, 'src/pages/add-recipe.html'),
         editRecipe: resolve(__dirname, 'src/pages/edit-recipe.html'),
         recipeDetail: resolve(__dirname, 'src/pages/recipe-detail.html'),
+        cookMode: resolve(__dirname, 'src/pages/cook-mode.html'),
         admin: resolve(__dirname, 'src/pages/admin.html'),
         profile: resolve(__dirname, 'src/pages/profile.html'),
         notFound: resolve(__dirname, '404.html'),
