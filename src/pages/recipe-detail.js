@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { Modal } from 'bootstrap'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
+import { initBackToTop } from '../components/back-to-top.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { getRecipeWithDetails, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
@@ -297,6 +298,7 @@ function showNotFound() {
 
 async function init() {
   await initNavbar()
+  initBackToTop()
   consumeStoredToast()
   await loadRecipe()
 }

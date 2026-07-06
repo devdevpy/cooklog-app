@@ -2,6 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
+import { initBackToTop } from '../components/back-to-top.js'
 import { getUser } from '../services/auth.js'
 import { uploadRecipeImage } from '../services/storage.js'
 import { createRecipe } from '../services/recipes.js'
@@ -88,6 +89,7 @@ async function handleSubmit(e) {
 
 async function init() {
   await initNavbar()
+  initBackToTop()
   await checkAuth()
 
   await loadCategories(document.getElementById('category'))

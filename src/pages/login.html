@@ -103,9 +103,11 @@
       import 'bootstrap/dist/js/bootstrap.bundle.min.js'
       import '/src/css/style.css'
       import { initNavbar } from '/src/components/navbar.js'
+      import { initBackToTop } from '/src/components/back-to-top.js'
       import { signIn } from '/src/services/auth.js'
 
       initNavbar('#navbar')
+      initBackToTop()
 
       const form = document.getElementById('loginForm')
       const alertBox = document.getElementById('formAlert')

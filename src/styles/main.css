@@ -1133,6 +1133,42 @@ a:hover {
 }
 
 /* ---------------------------------------------------------------------- *
+ * Back to Top button
+ * ---------------------------------------------------------------------- */
+
+.back-to-top-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: var(--color-primary);
+  font-size: 1.2rem;
+  line-height: 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+.back-to-top-btn.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.back-to-top-btn:hover,
+.back-to-top-btn:focus {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-md);
+  color: var(--color-primary);
+}
+
+/* ---------------------------------------------------------------------- *
  * Profile page
  * ---------------------------------------------------------------------- */
 

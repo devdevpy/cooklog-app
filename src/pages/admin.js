@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { Modal } from 'bootstrap'
 import '../css/style.css'
 import { initNavbar } from '../components/navbar.js'
+import { initBackToTop } from '../components/back-to-top.js'
 import { getUser, isAdmin } from '../services/auth.js'
 import { getUsersWithRoles, setUserRole, getAdminStats } from '../services/admin.js'
 import { showToast, storeToast } from '../js/toast.js'
@@ -293,6 +294,7 @@ document.getElementById('usersTableBody').addEventListener('click', async (e) =>
 
 async function init() {
   await initNavbar()
+  initBackToTop()
 
   const user = await guardAccess()
   if (!user) return

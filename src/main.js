@@ -3,6 +3,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import './css/style.css'
 import { Modal } from 'bootstrap'
 import { initNavbar } from './components/navbar.js'
+import { initBackToTop } from './components/back-to-top.js'
 import { supabase } from './js/supabaseClient.js'
 import { getRecipes } from './services/recipes.js'
 import { getCategories } from './js/categories.js'
@@ -33,6 +34,7 @@ function getInitialViewScope() {
 }
 
 initNavbar('#navbar')
+initBackToTop()
 consumeStoredToast()
 
 function getVisibleRecipePool() {
