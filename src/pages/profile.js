@@ -2,7 +2,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { Modal } from 'bootstrap'
 import { initNavbar } from '../components/navbar.js'
 import { initBackToTop } from '../components/back-to-top.js'
-import { getUser } from '../services/auth.js'
+import { getUser, changePassword } from '../services/auth.js'
 import { getProfile, updateAvatarUrl, updateFullName } from '../services/profiles.js'
 import { getRecipes, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
@@ -144,6 +144,55 @@ function wireNameEdit(userId, initialName) {
   })
 }
 
+function wireChangePassword(email) {
+  const form = document.getElementById('changePasswordForm')
+  const currentInput = document.getElementById('currentPassword')
+  const newInput = document.getElementById('newPassword')
+  const confirmInput = document.getElementById('confirmPassword')
+  const submitBtn = document.getElementById('changePasswordBtn')
+  const spinner = document.getElementById('changePasswordSpinner')
+  const icon = document.getElementById('changePasswordIcon')
+  const alertBox = document.getElementById('passwordAlert')
+
+  function checkPasswordsMatch() {
+    confirmInput.setCustomValidity(
+      confirmInput.value && confirmInput.value !== newInput.value ? 'Passwords must match.' : ''
+    )
+  }
+  newInput.addEventListener('input', checkPasswordsMatch)
+  confirmInput.addEventListener('input', checkPasswordsMatch)
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    checkPasswordsMatch()
+    alertBox.className = 'alert d-none'
+
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated')
+      return
+    }
+
+    submitBtn.disabled = true
+    spinner.classList.remove('d-none')
+    icon.classList.add('d-none')
+    try {
+      await changePassword(email, currentInput.value, newInput.value)
+      form.reset()
+      form.classList.remove('was-validated')
+      alertBox.className = 'alert alert-success'
+      alertBox.textContent = 'Password updated successfully.'
+    } catch (error) {
+      console.error('Failed to change password:', error)
+      alertBox.className = 'alert alert-danger'
+      alertBox.textContent = error.message || 'Failed to update password.'
+    } finally {
+      submitBtn.disabled = false
+      spinner.classList.add('d-none')
+      icon.classList.remove('d-none')
+    }
+  })
+}
+
 function wireDeleteModal() {
   const modalEl = document.getElementById('deleteRecipeModal')
   const modal = Modal.getOrCreateInstance(modalEl)
@@ -215,6 +264,7 @@ async function init() {
     renderStats(myRecipes)
     renderRecipes(myRecipes)
     wireAvatarUpload(user.id)
+    wireChangePassword(user.email)
     wireDeleteModal()
 
     document.getElementById('profileLoader').classList.add('d-none')

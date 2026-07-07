@@ -53,6 +53,22 @@ export async function signIn({ email, password }) {
 }
 
 /**
+ * Change the current user's password. Re-verifies `currentPassword` with a
+ * fresh sign-in before applying `newPassword`, so an unlocked/left-open
+ * session can't have its password swapped without re-proving identity.
+ */
+export async function changePassword(email, currentPassword, newPassword) {
+  const { error: verifyError } = await supabase.auth.signInWithPassword({
+    email,
+    password: currentPassword,
+  })
+  if (verifyError) throw new Error('Current password is incorrect.')
+
+  const { error: updateError } = await supabase.auth.updateUser({ password: newPassword })
+  if (updateError) throw updateError
+}
+
+/**
  * Sign the current user out.
  */
 export async function signOut() {
