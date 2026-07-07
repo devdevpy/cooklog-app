@@ -89,7 +89,7 @@ function ingredientRowHtml({ name = '', amount = '', unit = '' } = {}) {
       <div class="col-6 col-md-3">
         <input type="text" class="form-control form-control-sm"
           placeholder="Unit (e.g. g, cup, pinch)" name="ingredientUnit[]"
-          value="${escapeAttr(unit)}" required />
+          value="${escapeAttr(unit)}" />
       </div>
       <div class="col-12 col-md-1">
         <button type="button" class="btn btn-sm btn-outline-danger w-100 remove-ingredient">
