@@ -225,7 +225,7 @@ export function collectRecipeFormData(form) {
   const units = formData.getAll('ingredientUnit[]')
 
   for (let i = 0; i < names.length; i++) {
-    if (names[i].trim() && amounts[i].trim() && units[i].trim()) {
+    if (names[i].trim() && amounts[i].trim()) {
       ingredients.push({
         name: names[i].trim(),
         amount: amounts[i].trim(),
