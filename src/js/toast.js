@@ -1,7 +1,7 @@
 // Shared toast notification helper — replaces plain alert() calls with
 // Bootstrap toasts so success/error feedback looks consistent everywhere.
 
-import { Toast } from 'bootstrap'
+import { Toast } from 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 const STORAGE_KEY = 'cooklog:toast'
 
