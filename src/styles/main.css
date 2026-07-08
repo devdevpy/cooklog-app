@@ -305,12 +305,21 @@ a:hover {
   border-top: 3px solid transparent;
   box-shadow: var(--shadow-sm);
   overflow: hidden;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, opacity 0.5s ease;
 }
 .recipe-card:hover {
   border-top-color: var(--color-accent);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
   transform: translateY(-2px);
+}
+
+/* Applied by scrollReveal.js while a card is off-screen; removed once it
+   scrolls into view, letting the transition above animate it in.
+   scrollReveal.js also sets a temporary inline transition-delay for
+   stagger, cleared after the transition ends — see that file for why. */
+.recipe-card.reveal-pending {
+  opacity: 0;
+  transform: translateY(24px);
 }
 
 .recipe-card-media {
@@ -432,6 +441,9 @@ a:hover {
   border-radius: 8px;
   padding: 10px 24px;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+.btn:active {
+  transform: scale(0.97);
 }
 .btn-sm {
   padding: 6px 16px;
@@ -860,6 +872,14 @@ a:hover {
 }
 .favorite-btn.is-favorited {
   color: #DC2626;
+}
+.favorite-btn.is-pulsing {
+  animation: cooklog-heart-pulse 0.4s ease;
+}
+@keyframes cooklog-heart-pulse {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.35); }
+  100% { transform: scale(1); }
 }
 
 /* ---------------------------------------------------------------------- *

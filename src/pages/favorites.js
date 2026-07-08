@@ -4,6 +4,7 @@ import { initBackToTop } from '../components/back-to-top.js'
 import { getUser } from '../services/auth.js'
 import { getFavorites } from '../services/favorites.js'
 import { recipesGrid, loadingState } from '../js/recipesView.js'
+import { revealCardsOnScroll } from '../js/scrollReveal.js'
 
 async function checkAuth() {
   const user = await getUser()
@@ -46,6 +47,7 @@ async function init() {
   try {
     const recipes = await getFavorites(user.id)
     container.innerHTML = recipes.length > 0 ? recipesGrid(recipes) : emptyFavoritesState()
+    revealCardsOnScroll(container)
   } catch (error) {
     console.error('Failed to load favorites:', error)
     container.innerHTML = errorState()

@@ -8,6 +8,7 @@ import { deleteRecipeImage } from '../services/storage.js'
 import { uploadAvatar } from '../services/avatarStorage.js'
 import { setupImagePreview } from '../js/recipeForm.js'
 import { recipesGrid, emptyState } from '../js/recipesView.js'
+import { revealCardsOnScroll } from '../js/scrollReveal.js'
 import { showToast } from '../js/toast.js'
 
 let myRecipes = []
@@ -55,6 +56,7 @@ function renderRecipes(recipes) {
   const container = document.getElementById('myRecipesContainer')
   container.innerHTML =
     recipes.length > 0 ? recipesGrid(recipes, { showActions: true }) : emptyState()
+  revealCardsOnScroll(container)
 }
 
 function wireAvatarUpload(userId) {

@@ -265,6 +265,11 @@ function wireFavoriteButton(recipeId, initiallyFavorited) {
         showToast('Added to favorites.', 'success')
       }
       paint()
+      btn.classList.remove('is-pulsing')
+      // Force reflow so the animation restarts on rapid consecutive clicks.
+      void btn.offsetWidth
+      btn.classList.add('is-pulsing')
+      btn.addEventListener('animationend', () => btn.classList.remove('is-pulsing'), { once: true })
     } catch (error) {
       console.error('Failed to update favorite:', error)
       showToast(error.message || 'Failed to update favorites.', 'danger')
