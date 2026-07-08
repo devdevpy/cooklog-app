@@ -9,6 +9,7 @@ import { uploadAvatar } from '../services/avatarStorage.js'
 import { setupImagePreview } from '../js/recipeForm.js'
 import { recipesGrid, emptyState } from '../js/recipesView.js'
 import { revealCardsOnScroll } from '../js/scrollReveal.js'
+import { observeCountUp } from '../js/countUp.js'
 import { showToast } from '../js/toast.js'
 
 let myRecipes = []
@@ -48,7 +49,7 @@ function computeStats(recipes) {
 
 function renderStats(recipes) {
   const { total, topCategory } = computeStats(recipes)
-  document.getElementById('statTotalRecipes').textContent = total
+  observeCountUp(document.getElementById('statTotalRecipes'), total)
   document.getElementById('statTopCategory').textContent = topCategory ?? '—'
 }
 
