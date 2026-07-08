@@ -126,17 +126,27 @@ async function loadRecipes() {
   }
 }
 
+const RANDOM_SPIN_MS = 500
+
 function showRandomRecipe() {
-  const pool = getFiltered()
-  if (pool.length === 0) {
-    randomModalBody.innerHTML =
-      '<p class="text-secondary mb-0">No recipes available to pick from.</p>'
-  } else {
-    const pick = pool[Math.floor(Math.random() * pool.length)]
-    // recipeCard returns a .col wrapper; a single column fills the modal nicely.
-    randomModalBody.innerHTML = `<div class="row">${recipeCard(pick)}</div>`
-  }
-  Modal.getOrCreateInstance(randomModalEl).show()
+  if (randomBtn.disabled) return
+  randomBtn.disabled = true
+  randomBtn.classList.add('is-spinning')
+
+  setTimeout(() => {
+    const pool = getFiltered()
+    if (pool.length === 0) {
+      randomModalBody.innerHTML =
+        '<p class="text-secondary mb-0">No recipes available to pick from.</p>'
+    } else {
+      const pick = pool[Math.floor(Math.random() * pool.length)]
+      // recipeCard returns a .col wrapper; a single column fills the modal nicely.
+      randomModalBody.innerHTML = `<div class="row">${recipeCard(pick)}</div>`
+    }
+    Modal.getOrCreateInstance(randomModalEl).show()
+    randomBtn.classList.remove('is-spinning')
+    randomBtn.disabled = false
+  }, RANDOM_SPIN_MS)
 }
 
 // Debounced search
