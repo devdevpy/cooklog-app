@@ -35,6 +35,7 @@ async function loadRecipe() {
     const canManage = isOwner || admin
 
     renderRecipe(recipe, ingredients, steps, { canManage })
+    wireStickyBar(recipe)
 
     if (canManage) {
       wireManagementActions(recipe)
@@ -140,7 +141,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
             </div>
 
             <div class="d-flex justify-content-between align-items-start gap-2 mb-3">
-              <h1 class="h2 mb-0">${escapeHtml(recipe.title)}</h1>
+              <h1 class="h2 mb-0" id="recipeTitle">${escapeHtml(recipe.title)}</h1>
               <button
                 type="button"
                 id="favoriteBtn"
@@ -169,7 +170,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
             </div>
 
             <div class="d-grid d-sm-flex mb-4">
-              <a href="/src/pages/cook-mode.html?id=${escapeHtml(recipe.id)}"
+              <a id="startCookingBtn" href="/src/pages/cook-mode.html?id=${escapeHtml(recipe.id)}"
                  class="btn start-cooking-btn btn-lg d-inline-flex align-items-center justify-content-center gap-2">
                 🍳 Start Cooking
               </a>
@@ -197,6 +198,61 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
       </div>
     </div>
   `
+}
+
+/**
+ * Fixed bar with the recipe title + quick actions, shown once the real
+ * title has scrolled out of view so key actions stay reachable without
+ * scrolling back up. The favorite button here just proxies clicks to the
+ * real `#favoriteBtn` and mirrors its icon/visibility via MutationObserver,
+ * so the favoriting logic itself lives in one place.
+ */
+function wireStickyBar(recipe) {
+  const titleEl = document.getElementById('recipeTitle')
+  const mainFavoriteBtn = document.getElementById('favoriteBtn')
+  const startCookingBtn = document.getElementById('startCookingBtn')
+  if (!titleEl || !startCookingBtn) return
+
+  const bar = document.createElement('div')
+  bar.className = 'recipe-sticky-bar'
+  bar.innerHTML = `
+    <p class="recipe-sticky-bar-title">${escapeHtml(recipe.title)}</p>
+    <div class="recipe-sticky-bar-actions">
+      <button type="button" id="stickyFavoriteBtn" class="btn favorite-btn d-none"
+              aria-label="Add to favorites" title="Add to favorites">
+        <i class="bi bi-heart"></i>
+      </button>
+      <a href="${escapeHtml(startCookingBtn.getAttribute('href'))}"
+         class="btn start-cooking-btn btn-sm d-inline-flex align-items-center gap-1">
+        🍳 Start Cooking
+      </a>
+    </div>`
+  document.body.appendChild(bar)
+
+  const stickyFavoriteBtn = bar.querySelector('#stickyFavoriteBtn')
+  stickyFavoriteBtn.addEventListener('click', () => mainFavoriteBtn?.click())
+
+  if (mainFavoriteBtn) {
+    const syncFavoriteState = () => {
+      stickyFavoriteBtn.classList.toggle('d-none', mainFavoriteBtn.classList.contains('d-none'))
+      stickyFavoriteBtn.classList.toggle('is-favorited', mainFavoriteBtn.classList.contains('is-favorited'))
+      stickyFavoriteBtn.classList.toggle('is-pulsing', mainFavoriteBtn.classList.contains('is-pulsing'))
+      stickyFavoriteBtn.querySelector('i').className = mainFavoriteBtn.querySelector('i').className
+    }
+    syncFavoriteState()
+    const classObserver = new MutationObserver(syncFavoriteState)
+    classObserver.observe(mainFavoriteBtn, { attributes: true, attributeFilter: ['class'] })
+    classObserver.observe(mainFavoriteBtn.querySelector('i'), {
+      attributes: true,
+      attributeFilter: ['class'],
+    })
+  }
+
+  const titleObserver = new IntersectionObserver(
+    ([entry]) => bar.classList.toggle('is-visible', !entry.isIntersecting),
+    { threshold: 0 }
+  )
+  titleObserver.observe(titleEl)
 }
 
 function wireManagementActions(recipe) {
