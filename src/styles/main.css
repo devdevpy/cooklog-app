@@ -520,6 +520,12 @@ a:hover {
  * ---------------------------------------------------------------------- */
 
 .btn {
+  /* Bootstrap sets this per-variant (.btn-primary, .btn-outline-*, etc.) to
+     its own blue; overriding it here on the shared .btn base — after
+     Bootstrap's CSS in load order — wins the cascade for every variant at
+     once, so the focus/active ring matches the theme instead of flashing
+     Bootstrap's default blue. */
+  --bs-btn-focus-shadow-rgb: 212, 175, 55;
   font-family: var(--font-body);
   font-weight: 600;
   border-radius: 8px;
@@ -538,10 +544,15 @@ a:hover {
   border-color: var(--color-primary);
   color: #fff;
 }
+/* Bootstrap's own `:active`/`.active`/`.show` selector list (see
+   `.btn:first-child:active` etc. in bootstrap.css) out-specifies a plain
+   `.btn-primary:active`, so it wins the mouse-down moment and flashes
+   Bootstrap's default blue unless we !important it here too. */
 .btn-primary:hover,
-.btn-primary:focus {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary-light);
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary-light) !important;
   color: #fff;
   box-shadow: 0 6px 16px rgba(27, 67, 50, 0.25);
   transform: translateY(-1px);
@@ -553,9 +564,10 @@ a:hover {
   color: var(--color-primary);
 }
 .btn-outline-primary:hover,
-.btn-outline-primary:focus {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
   color: #fff;
 }
 
@@ -565,9 +577,10 @@ a:hover {
   color: var(--color-text-muted);
 }
 .btn-outline-secondary:hover,
-.btn-outline-secondary:focus {
-  background-color: var(--color-primary);
-  border-color: var(--color-primary);
+.btn-outline-secondary:focus,
+.btn-outline-secondary:active {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
   color: #fff;
 }
 
@@ -577,9 +590,10 @@ a:hover {
   color: #fff;
 }
 .btn-danger:hover,
-.btn-danger:focus {
-  background-color: #b91c1c;
-  border-color: #b91c1c;
+.btn-danger:focus,
+.btn-danger:active {
+  background-color: #b91c1c !important;
+  border-color: #b91c1c !important;
   color: #fff;
 }
 
@@ -588,9 +602,10 @@ a:hover {
   border-color: #DC2626;
 }
 .btn-outline-danger:hover,
-.btn-outline-danger:focus {
-  background-color: #DC2626;
-  border-color: #DC2626;
+.btn-outline-danger:focus,
+.btn-outline-danger:active {
+  background-color: #DC2626 !important;
+  border-color: #DC2626 !important;
   color: #fff;
 }
 
