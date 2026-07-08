@@ -967,6 +967,58 @@ a:hover {
 }
 
 /* ---------------------------------------------------------------------- *
+ * Sticky title bar (recipe detail page) — shown once the real title
+ * scrolls out of view, see wireStickyBar() in recipe-detail.js.
+ * ---------------------------------------------------------------------- */
+
+.recipe-sticky-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1015;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1.25rem;
+  background: var(--color-bg-card);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-120%);
+  transition: transform 0.25s ease;
+}
+.recipe-sticky-bar.is-visible {
+  transform: translateY(0);
+}
+
+.recipe-sticky-bar-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--color-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.recipe-sticky-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.recipe-sticky-bar-actions .favorite-btn {
+  font-size: 1.3rem;
+}
+
+@media (max-width: 575px) {
+  .recipe-sticky-bar-title {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------------- *
  * Start Cooking button (recipe detail page)
  * ---------------------------------------------------------------------- */
 
