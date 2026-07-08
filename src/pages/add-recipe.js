@@ -12,6 +12,7 @@ import {
   setupDynamicSteps,
   refreshRemoveButtons,
   collectRecipeFormData,
+  reportFirstInvalidField,
 } from '../js/recipeForm.js'
 
 async function checkAuth() {
@@ -29,6 +30,7 @@ async function handleSubmit(e) {
   if (!form.checkValidity()) {
     e.stopPropagation()
     form.classList.add('was-validated')
+    reportFirstInvalidField(form)
     return
   }
 

@@ -2,6 +2,7 @@
 // Keeps DOM wiring in one place so both pages behave identically.
 
 import { supabase } from './supabaseClient.js'
+import { showToast } from './toast.js'
 
 function escapeAttr(value) {
   return String(value ?? '')
@@ -255,6 +256,47 @@ export function collectRecipeFormData(form) {
     ingredients,
     steps,
   }
+}
+
+// Dynamic (repeated) fields don't have their own <label for>, so their
+// friendly names are hardcoded here instead.
+const REPEATED_FIELD_LABELS = {
+  'ingredientName[]': 'Ingredient name',
+  'ingredientAmount[]': 'Ingredient amount',
+  'stepInstruction[]': 'Instruction step',
+}
+
+function friendlyFieldLabel(field, form) {
+  if (field.id) {
+    const label = form.querySelector(`label[for="${field.id}"]`)
+    if (label) return label.textContent.replace('*', '').trim()
+  }
+
+  const baseName = REPEATED_FIELD_LABELS[field.name]
+  if (baseName) {
+    const sameName = Array.from(form.querySelectorAll(`[name="${field.name}"]`))
+    const index = sameName.indexOf(field)
+    return sameName.length > 1 ? `${baseName} (row ${index + 1})` : baseName
+  }
+
+  return field.placeholder || field.name || 'This field'
+}
+
+/**
+ * Finds the first invalid field in `form` (document order matches the
+ * visual top-to-bottom order), scrolls/focuses it, and names it in a toast.
+ * On a long form the submit button and the actual problem field can be far
+ * apart, so a red border alone is easy to miss — this makes it obvious.
+ */
+export function reportFirstInvalidField(form) {
+  const invalidField = form.querySelector(':invalid')
+  if (!invalidField) return
+
+  const label = friendlyFieldLabel(invalidField, form)
+  showToast(`Please fill in **${label}** before saving.`, 'warning')
+
+  invalidField.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  invalidField.focus({ preventScroll: true })
 }
 
 /**

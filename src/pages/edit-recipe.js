@@ -14,6 +14,7 @@ import {
   refreshRemoveButtons,
   collectRecipeFormData,
   prefillScalarFields,
+  reportFirstInvalidField,
 } from '../js/recipeForm.js'
 
 function showError(message) {
@@ -54,6 +55,7 @@ async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
   if (!form.checkValidity()) {
     e.stopPropagation()
     form.classList.add('was-validated')
+    reportFirstInvalidField(form)
     return
   }
 
