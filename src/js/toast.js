@@ -66,6 +66,13 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;')
 }
 
+// Escapes the whole message, then turns **text** into <strong>text</strong>
+// so callers can emphasize part of a message (e.g. a field name) without
+// opening up raw HTML injection — everything else stays plain text.
+function renderMessage(message) {
+  return escapeHtml(message).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+}
+
 function getContainer() {
   let container = document.getElementById('toastContainer')
   if (!container) {
@@ -96,7 +103,7 @@ export function showToast(message, type = 'success') {
     <div class="d-flex">
       <div class="toast-body d-flex align-items-center gap-2">
         <i class="bi ${variant.icon}"></i>
-        <span>${escapeHtml(message)}</span>
+        <span>${renderMessage(message)}</span>
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>`
