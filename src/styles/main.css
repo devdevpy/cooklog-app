@@ -308,6 +308,18 @@ a:hover {
   border-color: var(--color-accent);
   color: var(--color-primary);
 }
+.hero-random-btn.is-spinning .bi-shuffle {
+  animation: cooklog-spin 0.5s linear;
+}
+@keyframes cooklog-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-random-btn.is-spinning .bi-shuffle {
+    animation: none;
+  }
+}
 
 .hero-cta-btn {
   background: var(--color-accent);
