@@ -1,5 +1,6 @@
 import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 import { getRecipeWithDetails } from '../services/recipes.js'
+import { burstConfetti } from '../js/confetti.js'
 
 const SWIPE_THRESHOLD = 50
 
@@ -68,6 +69,7 @@ function wireStepNavigation(steps) {
     if (current === total - 1) {
       completed = true
       congratsOverlay.classList.remove('d-none')
+      burstConfetti(congratsOverlay)
       return
     }
     current += 1
