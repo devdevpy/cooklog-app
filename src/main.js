@@ -12,6 +12,7 @@ import {
   emptyState,
   errorState,
 } from './js/recipesView.js'
+import { revealCardsOnScroll } from './js/scrollReveal.js'
 
 const container = document.querySelector('#recipesContainer')
 const searchInput = document.querySelector('#searchInput')
@@ -90,6 +91,7 @@ function renderList() {
     return
   }
   container.innerHTML = recipesGrid(filtered)
+  revealCardsOnScroll(container)
 }
 
 async function loadCategories() {
