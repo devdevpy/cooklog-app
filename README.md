@@ -164,7 +164,7 @@ is enough).
 | Path | Contents |
 |---|---|
 | [`src/pages/`](src/pages/) | One HTML entry point + companion `.js` per screen (about, login, register, add-recipe, edit-recipe, recipe-detail, cook-mode, admin, profile, favorites) |
-| [`src/js/`](src/js/) | Shared low-level modules: `supabaseClient.js` (the single Supabase client instance), `categories.js`, `recipeForm.js`, `recipesView.js` (card/state HTML templates), `toast.js` |
+| [`src/js/`](src/js/) | Shared low-level modules: `supabaseClient.js` (the single Supabase client instance), `categories.js`, `recipeForm.js`, `recipesView.js` (card/state HTML templates), `toast.js` (also names the first invalid field and plays a sound on form validation errors), `scrollReveal.js` (fade/slide-in cards via IntersectionObserver as they scroll into view), `countUp.js` (animates a stat counting up when it scrolls into view), `confetti.js` (dependency-free confetti burst, used on Cook Mode completion) |
 | [`src/services/`](src/services/) | Data-access layer, one file per Supabase resource (`auth.js`, `profiles.js`, `recipes.js`, `favorites.js`, `admin.js`, `avatarStorage.js`, `storage.js`) — the only layer that calls `supabase.from(...)` / `supabase.auth` directly |
 | [`src/components/`](src/components/) | Reusable UI fragments shared across pages: `navbar.js` (auth-aware nav, session/role rendering, account-status enforcement), `back-to-top.js` |
 | [`src/css/style.css`](src/css/style.css) | Custom styles layered on top of Bootstrap |
