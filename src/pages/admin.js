@@ -20,6 +20,8 @@ import {
   countRecipesInCategory,
 } from '../js/categories.js'
 import { reportFirstInvalidField } from '../js/formValidation.js'
+import { getRecipes, deleteRecipe } from '../services/recipes.js'
+import { deleteRecipeImage } from '../services/storage.js'
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -450,6 +452,97 @@ document.getElementById('usersTableBody').addEventListener('click', async (e) =>
   }
 })
 
+// --- Recipes (admin oversight — includes every user's private recipes) ----
+
+function recipeRowHtml(recipe) {
+  const thumb = recipe.image_url
+    ? `<img src="${escapeHtml(recipe.image_url)}" alt="" class="rounded"
+         style="width: 48px; height: 48px; object-fit: cover;">`
+    : `<div class="rounded bg-body-secondary d-flex align-items-center justify-content-center text-secondary"
+         style="width: 48px; height: 48px;">
+         <i class="bi bi-card-image"></i>
+       </div>`
+  const privateBadge = recipe.is_private
+    ? `<span class="badge bg-warning-subtle text-warning-emphasis ms-1">
+         <i class="bi bi-lock-fill me-1"></i>Private
+       </span>`
+    : ''
+  const categoryName = escapeHtml(recipe.categories?.name || 'Uncategorized')
+  const ownerName = escapeHtml(recipe.author?.full_name || 'Unknown')
+  const title = escapeHtml(recipe.title)
+
+  return `
+    <tr>
+      <td>${thumb}</td>
+      <td class="fw-semibold">${title}${privateBadge}</td>
+      <td>${ownerName}</td>
+      <td>${categoryName}</td>
+      <td class="text-end text-nowrap">
+        <a href="/src/pages/edit-recipe.html?id=${recipe.id}&returnTo=admin" class="btn btn-sm btn-outline-primary me-1">
+          <i class="bi bi-pencil"></i>
+        </a>
+        <button type="button" class="btn btn-sm btn-outline-danger delete-recipe-btn"
+          data-id="${recipe.id}" data-title="${title}">
+          <i class="bi bi-trash"></i>
+        </button>
+      </td>
+    </tr>`
+}
+
+async function loadRecipesTable() {
+  const tbody = document.getElementById('recipesTableBody')
+  tbody.innerHTML = `<tr><td colspan="5" class="text-center text-secondary py-4">
+    <span class="spinner-border spinner-border-sm me-2"></span>Loading...</td></tr>`
+  try {
+    const recipes = await getRecipes()
+    tbody.innerHTML = recipes.length
+      ? recipes.map(recipeRowHtml).join('')
+      : `<tr><td colspan="5" class="text-center text-secondary py-4">No recipes yet.</td></tr>`
+  } catch (err) {
+    console.error('Failed to load recipes:', err)
+    tbody.innerHTML = `<tr><td colspan="5" class="text-danger py-4">Failed to load recipes.</td></tr>`
+  }
+}
+
+const deleteRecipeModalEl = document.getElementById('deleteRecipeModal')
+const deleteRecipeModal = Modal.getOrCreateInstance(deleteRecipeModalEl)
+const deleteRecipeBody = document.getElementById('deleteRecipeBody')
+const deleteRecipeFooter = document.getElementById('deleteRecipeFooter')
+
+function openDeleteRecipeModal(id, title) {
+  deleteRecipeBody.innerHTML = `
+    <p class="mb-0">Are you sure you want to delete "<strong>${escapeHtml(title)}</strong>"? This action cannot be undone.</p>`
+  deleteRecipeFooter.innerHTML = `
+    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-danger" id="confirmDeleteRecipeBtn"><i class="bi bi-trash me-1"></i> Delete</button>`
+  deleteRecipeModal.show()
+
+  document.getElementById('confirmDeleteRecipeBtn').addEventListener('click', async (e) => {
+    const btn = e.currentTarget
+    btn.disabled = true
+    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span>Deleting...`
+    try {
+      const { imageUrl } = await deleteRecipe(id)
+      if (imageUrl) await deleteRecipeImage(imageUrl)
+      deleteRecipeModal.hide()
+      showToast(`Recipe "${title}" deleted.`, 'success')
+      await loadRecipesTable()
+    } catch (err) {
+      console.error('Failed to delete recipe:', err)
+      btn.disabled = false
+      btn.innerHTML = `<i class="bi bi-trash me-1"></i> Delete`
+      showToast(err?.message || 'Failed to delete recipe.', 'danger')
+    }
+  })
+}
+
+document.getElementById('recipesTableBody').addEventListener('click', (e) => {
+  const deleteBtn = e.target.closest('.delete-recipe-btn')
+  if (deleteBtn) {
+    openDeleteRecipeModal(deleteBtn.dataset.id, deleteBtn.dataset.title)
+  }
+})
+
 async function init() {
   await initNavbar()
   initBackToTop()
@@ -461,7 +554,7 @@ async function init() {
   document.getElementById('accessLoader').classList.add('d-none')
   document.getElementById('adminContent').classList.remove('d-none')
 
-  await Promise.all([loadStats(), loadCategoriesTable(), loadUsersTable()])
+  await Promise.all([loadStats(), loadCategoriesTable(), loadUsersTable(), loadRecipesTable()])
 }
 
 init()
