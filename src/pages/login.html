@@ -106,6 +106,7 @@
       import { initBackToTop } from '/src/components/back-to-top.js'
       import { signIn } from '/src/services/auth.js'
       import { consumeStoredToast } from '/src/js/toast.js'
+      import { reportFirstInvalidField } from '/src/js/formValidation.js'
 
       initNavbar('#navbar')
       initBackToTop()
@@ -140,6 +141,7 @@
 
         if (!form.checkValidity()) {
           form.classList.add('was-validated')
+          reportFirstInvalidField(form)
           return
         }
 

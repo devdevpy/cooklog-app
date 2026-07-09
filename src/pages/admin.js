@@ -19,6 +19,7 @@ import {
   deleteCategory,
   countRecipesInCategory,
 } from '../js/categories.js'
+import { reportFirstInvalidField } from '../js/formValidation.js'
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -135,6 +136,7 @@ categoryForm.addEventListener('submit', async (e) => {
   e.preventDefault()
   if (!categoryForm.checkValidity()) {
     categoryForm.classList.add('was-validated')
+    reportFirstInvalidField(categoryForm)
     return
   }
 
