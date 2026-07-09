@@ -13,6 +13,7 @@ import {
   errorState,
 } from './js/recipesView.js'
 import { revealCardsOnScroll } from './js/scrollReveal.js'
+import { rememberScrollPosition, restoreScrollPosition } from './js/scrollPosition.js'
 
 const container = document.querySelector('#recipesContainer')
 const searchInput = document.querySelector('#searchInput')
@@ -33,6 +34,7 @@ function getInitialViewScope() {
 
 initNavbar('#navbar')
 initBackToTop()
+rememberScrollPosition('home')
 consumeStoredToast()
 
 function getVisibleRecipePool() {
@@ -90,7 +92,9 @@ function renderList() {
     container.innerHTML = emptyState({ filtered: isFiltered && allRecipes.length > 0 })
     return
   }
-  container.innerHTML = recipesGrid(filtered)
+  container.innerHTML = recipesGrid(filtered, {
+    backTo: window.location.pathname + window.location.search,
+  })
   revealCardsOnScroll(container)
 }
 
@@ -120,6 +124,7 @@ async function loadRecipes() {
     activeViewScope = getInitialViewScope()
     updateViewButtons()
     renderList()
+    restoreScrollPosition('home')
   } catch (err) {
     console.error('Failed to load recipes:', err)
     container.innerHTML = errorState(err?.message)

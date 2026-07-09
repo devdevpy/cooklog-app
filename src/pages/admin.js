@@ -20,6 +20,7 @@ import {
   countRecipesInCategory,
 } from '../js/categories.js'
 import { reportFirstInvalidField } from '../js/formValidation.js'
+import { rememberScrollPosition, restoreScrollPosition } from '../js/scrollPosition.js'
 import { getRecipes, deleteRecipe } from '../services/recipes.js'
 import { deleteRecipeImage } from '../services/storage.js'
 
@@ -546,6 +547,7 @@ document.getElementById('recipesTableBody').addEventListener('click', (e) => {
 async function init() {
   await initNavbar()
   initBackToTop()
+  rememberScrollPosition('admin')
 
   const user = await guardAccess()
   if (!user) return
@@ -555,6 +557,7 @@ async function init() {
   document.getElementById('adminContent').classList.remove('d-none')
 
   await Promise.all([loadStats(), loadCategoriesTable(), loadUsersTable(), loadRecipesTable()])
+  restoreScrollPosition('admin')
 }
 
 init()

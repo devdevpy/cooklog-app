@@ -26,6 +26,11 @@ async function loadRecipe() {
     return
   }
 
+  // Recipe cards pass along the exact page (+ its filters, e.g. `?view=mine`)
+  // they were rendered on via `back`, so "Back to recipes" — and a delete —
+  // return there instead of always going to "/". See recipeCard()'s `backTo`.
+  const backHref = params.get('back') || '/'
+
   try {
     const { recipe, ingredients, steps } = await getRecipeWithDetails(recipeId)
 
@@ -34,11 +39,11 @@ async function loadRecipe() {
     const admin = !isOwner && user ? await isAdmin() : false
     const canManage = isOwner || admin
 
-    renderRecipe(recipe, ingredients, steps, { canManage })
+    renderRecipe(recipe, ingredients, steps, { canManage, backHref })
     wireStickyBar(recipe)
 
     if (canManage) {
-      wireManagementActions(recipe)
+      wireManagementActions(recipe, backHref)
     }
 
     if (user) {
@@ -57,7 +62,7 @@ async function loadRecipe() {
   }
 }
 
-function renderRecipe(recipe, ingredients, steps, { canManage }) {
+function renderRecipe(recipe, ingredients, steps, { canManage, backHref }) {
   const container = document.getElementById('recipeContent')
 
   const categoryName = recipe.categories?.name || 'Uncategorized'
@@ -118,7 +123,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage }) {
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10 col-xl-8">
         <div class="d-flex justify-content-between align-items-center mb-3">
-          <a href="/" class="text-decoration-none">
+          <a href="${escapeHtml(backHref)}" class="text-decoration-none">
             <i class="bi bi-arrow-left me-1"></i> Back to recipes
           </a>
         </div>
@@ -255,7 +260,7 @@ function wireStickyBar(recipe) {
   titleObserver.observe(titleEl)
 }
 
-function wireManagementActions(recipe) {
+function wireManagementActions(recipe, backHref) {
   const deleteBtn = document.getElementById('deleteRecipeBtn')
   if (!deleteBtn) return
 
@@ -281,7 +286,7 @@ function wireManagementActions(recipe) {
         await deleteRecipeImage(imageUrl)
       }
       storeToast('Recipe deleted.', 'success')
-      window.location.href = '/'
+      window.location.href = backHref
     } catch (error) {
       console.error('Failed to delete recipe:', error)
       showToast(error.message || 'Failed to delete recipe.', 'danger')
