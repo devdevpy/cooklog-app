@@ -11,6 +11,7 @@ import { recipesGrid, emptyState } from '../js/recipesView.js'
 import { revealCardsOnScroll } from '../js/scrollReveal.js'
 import { observeCountUp } from '../js/countUp.js'
 import { showToast } from '../js/toast.js'
+import { reportFirstInvalidField } from '../js/formValidation.js'
 
 let myRecipes = []
 
@@ -120,6 +121,7 @@ function wireNameEdit(userId, initialName) {
     e.preventDefault()
     if (!form.checkValidity()) {
       form.classList.add('was-validated')
+      reportFirstInvalidField(form)
       return
     }
 
@@ -171,6 +173,7 @@ function wireChangePassword(email) {
 
     if (!form.checkValidity()) {
       form.classList.add('was-validated')
+      reportFirstInvalidField(form)
       return
     }
 
