@@ -118,12 +118,17 @@ async function init() {
     return
   }
   // Editing from the admin panel's recipes table should return there
-  // afterwards instead of the recipe detail page — everywhere else
-  // (recipe detail, profile) keeps the existing detail-page redirect.
+  // afterwards instead of the recipe detail page. Otherwise, land back on
+  // the detail page — forwarding its own `back` (the list page/filters the
+  // user viewed it from, e.g. "?view=mine") so *that* page's own "Back to
+  // recipes" still points somewhere sensible instead of resetting to "/".
+  const listBack = params.get('back')
   const backHref =
     params.get('returnTo') === 'admin'
       ? '/src/pages/admin.html'
-      : `/src/pages/recipe-detail.html?id=${recipeId}`
+      : `/src/pages/recipe-detail.html?id=${recipeId}${
+          listBack ? `&back=${encodeURIComponent(listBack)}` : ''
+        }`
 
   let details
   try {

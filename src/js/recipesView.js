@@ -62,10 +62,14 @@ export function recipeCard(recipe, { showActions = false, backTo = null } = {}) 
     backTo ? `&back=${encodeURIComponent(backTo)}` : ''
   }`
 
+  const editHref = `/src/pages/edit-recipe.html?id=${encodeURIComponent(recipe.id)}${
+    backTo ? `&back=${encodeURIComponent(backTo)}` : ''
+  }`
+
   const actionsRow = showActions
     ? `
         <div class="d-flex gap-2 mb-2">
-          <a href="/src/pages/edit-recipe.html?id=${encodeURIComponent(recipe.id)}"
+          <a href="${editHref}"
              class="btn btn-outline-primary btn-sm flex-fill d-flex align-items-center justify-content-center gap-1">
             <i class="bi bi-pencil"></i> Edit
           </a>
