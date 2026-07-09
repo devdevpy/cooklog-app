@@ -40,8 +40,11 @@ function imageBlock(recipe) {
  * Render a single recipe as a card (column wrapper included).
  * Pass `{ showActions: true }` to render owner Edit/Delete controls on the
  * card (used by the profile page's "My Recipes" grid).
+ * Pass `{ backTo: window.location.pathname + window.location.search }` so
+ * the detail page's "Back to recipes" link (and post-delete redirect)
+ * returns to exactly this page/filter instead of always going home.
  */
-export function recipeCard(recipe, { showActions = false } = {}) {
+export function recipeCard(recipe, { showActions = false, backTo = null } = {}) {
   const categoryName = recipe.categories?.name
   const authorName = recipe.author?.full_name
   const badge = categoryName
@@ -55,7 +58,9 @@ export function recipeCard(recipe, { showActions = false } = {}) {
        </span>`
     : ''
 
-  const detailHref = `${DETAIL_URL}?id=${encodeURIComponent(recipe.id)}`
+  const detailHref = `${DETAIL_URL}?id=${encodeURIComponent(recipe.id)}${
+    backTo ? `&back=${encodeURIComponent(backTo)}` : ''
+  }`
 
   const actionsRow = showActions
     ? `

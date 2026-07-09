@@ -5,6 +5,7 @@ import { getUser } from '../services/auth.js'
 import { getFavorites } from '../services/favorites.js'
 import { recipesGrid, loadingState } from '../js/recipesView.js'
 import { revealCardsOnScroll } from '../js/scrollReveal.js'
+import { rememberScrollPosition, restoreScrollPosition } from '../js/scrollPosition.js'
 
 async function checkAuth() {
   const user = await getUser()
@@ -38,6 +39,7 @@ function errorState() {
 async function init() {
   await initNavbar()
   initBackToTop()
+  rememberScrollPosition('favorites')
   const user = await checkAuth()
   if (!user) return
 
@@ -46,8 +48,12 @@ async function init() {
 
   try {
     const recipes = await getFavorites(user.id)
-    container.innerHTML = recipes.length > 0 ? recipesGrid(recipes) : emptyFavoritesState()
+    container.innerHTML =
+      recipes.length > 0
+        ? recipesGrid(recipes, { backTo: window.location.pathname + window.location.search })
+        : emptyFavoritesState()
     revealCardsOnScroll(container)
+    restoreScrollPosition('favorites')
   } catch (error) {
     console.error('Failed to load favorites:', error)
     container.innerHTML = errorState()

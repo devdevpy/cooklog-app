@@ -9,6 +9,7 @@ import { uploadAvatar } from '../services/avatarStorage.js'
 import { setupImagePreview } from '../js/recipeForm.js'
 import { recipesGrid, emptyState } from '../js/recipesView.js'
 import { revealCardsOnScroll } from '../js/scrollReveal.js'
+import { rememberScrollPosition, restoreScrollPosition } from '../js/scrollPosition.js'
 import { observeCountUp } from '../js/countUp.js'
 import { showToast } from '../js/toast.js'
 import { reportFirstInvalidField } from '../js/formValidation.js'
@@ -57,7 +58,12 @@ function renderStats(recipes) {
 function renderRecipes(recipes) {
   const container = document.getElementById('myRecipesContainer')
   container.innerHTML =
-    recipes.length > 0 ? recipesGrid(recipes, { showActions: true }) : emptyState()
+    recipes.length > 0
+      ? recipesGrid(recipes, {
+          showActions: true,
+          backTo: window.location.pathname + window.location.search,
+        })
+      : emptyState()
   revealCardsOnScroll(container)
 }
 
@@ -246,6 +252,7 @@ function wireDeleteModal() {
 async function init() {
   await initNavbar()
   initBackToTop()
+  rememberScrollPosition('profile')
   const user = await checkAuth()
   if (!user) return
 
@@ -274,6 +281,7 @@ async function init() {
 
     document.getElementById('profileLoader').classList.add('d-none')
     document.getElementById('profileContent').classList.remove('d-none')
+    restoreScrollPosition('profile')
   } catch (error) {
     console.error('Failed to load profile:', error)
     document.getElementById('profileLoader').innerHTML = `
