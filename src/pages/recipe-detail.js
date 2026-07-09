@@ -109,7 +109,7 @@ function renderRecipe(recipe, ingredients, steps, { canManage, backHref }) {
   const manageBar = canManage
     ? `
       <div class="d-flex gap-2 mb-3">
-        <a id="editRecipeBtn" href="/src/pages/edit-recipe.html?id=${escapeHtml(recipe.id)}"
+        <a id="editRecipeBtn" href="/src/pages/edit-recipe.html?id=${escapeHtml(recipe.id)}&back=${encodeURIComponent(backHref)}"
            class="btn btn-outline-primary btn-sm">
           <i class="bi bi-pencil me-1"></i> Edit
         </a>

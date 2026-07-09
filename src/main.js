@@ -146,7 +146,9 @@ function showRandomRecipe() {
     } else {
       const pick = pool[Math.floor(Math.random() * pool.length)]
       // recipeCard returns a .col wrapper; a single column fills the modal nicely.
-      randomModalBody.innerHTML = `<div class="row">${recipeCard(pick)}</div>`
+      randomModalBody.innerHTML = `<div class="row">${recipeCard(pick, {
+        backTo: window.location.pathname + window.location.search,
+      })}</div>`
     }
     Modal.getOrCreateInstance(randomModalEl).show()
     randomBtn.classList.remove('is-spinning')
