@@ -49,7 +49,7 @@ async function ensureAuthorised(recipe) {
   return user
 }
 
-async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
+async function handleSubmit(e, { recipeId, existingImageUrl, ownerId, backHref }) {
   e.preventDefault()
   const form = e.target
   if (!form.checkValidity()) {
@@ -97,7 +97,7 @@ async function handleSubmit(e, { recipeId, existingImageUrl, ownerId }) {
     )
 
     storeToast('Recipe updated successfully!', 'success')
-    window.location.href = `/src/pages/recipe-detail.html?id=${recipeId}`
+    window.location.href = backHref
   } catch (error) {
     console.error('Failed to update recipe:', error)
     showToast(error.message || 'Failed to update recipe.', 'danger')
@@ -117,6 +117,13 @@ async function init() {
     showNotFound()
     return
   }
+  // Editing from the admin panel's recipes table should return there
+  // afterwards instead of the recipe detail page — everywhere else
+  // (recipe detail, profile) keeps the existing detail-page redirect.
+  const backHref =
+    params.get('returnTo') === 'admin'
+      ? '/src/pages/admin.html'
+      : `/src/pages/recipe-detail.html?id=${recipeId}`
 
   let details
   try {
@@ -139,7 +146,7 @@ async function init() {
 
   document.getElementById('initialLoader').classList.add('d-none')
   document.getElementById('formCard').classList.remove('d-none')
-  document.getElementById('cancelLink').href = `/src/pages/recipe-detail.html?id=${recipeId}`
+  document.getElementById('cancelLink').href = backHref
 
   const form = document.getElementById('editRecipeForm')
   prefillScalarFields(form, recipe)
@@ -168,6 +175,7 @@ async function init() {
       recipeId,
       existingImageUrl: recipe.image_url,
       ownerId: recipe.user_id,
+      backHref,
     })
   )
 }
