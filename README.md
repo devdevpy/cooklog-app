@@ -23,6 +23,7 @@ ingredients, and ordered step-by-step instructions.
 **Guests** (not signed in) can:
 - Browse public recipes on the home feed and open recipe details
 - Search by title and filter by category
+- Get served a random recipe from the current search/filter results
 - Read the About page
 
 **Registered users** can do everything a guest can, plus:
@@ -33,12 +34,13 @@ ingredients, and ordered step-by-step instructions.
 - Switch the home feed between "mine + public" and "mine only"
 - Use Cook Mode — a distraction-free, full-step view for cooking, with swipe
   navigation between steps
-- Manage their own profile (name, avatar)
+- Manage their own profile (name, avatar) and change their password
 
 **Admins** can do everything a registered user can, plus:
 - Create and delete categories
 - Promote or demote any user's role
-- Edit or delete any user's recipe
+- Oversee every recipe on the site — including other users' private ones —
+  from an "All Recipes" table on the admin panel, with edit/delete actions
 - Temporarily restrict or soft-delete a user account (and reverse either)
 - View site-wide stats (recipe / user / category counts) on the admin
   dashboard
@@ -163,17 +165,18 @@ is enough).
 
 | Path | Contents |
 |---|---|
-| [`src/pages/`](src/pages/) | One HTML entry point + companion `.js` per screen (about, login, register, add-recipe, edit-recipe, recipe-detail, cook-mode, admin, profile, favorites) |
-| [`src/js/`](src/js/) | Shared low-level modules: `supabaseClient.js` (the single Supabase client instance), `categories.js`, `recipeForm.js`, `recipesView.js` (card/state HTML templates), `toast.js` (also names the first invalid field and plays a sound on form validation errors), `scrollReveal.js` (fade/slide-in cards via IntersectionObserver as they scroll into view), `countUp.js` (animates a stat counting up when it scrolls into view), `confetti.js` (dependency-free confetti burst, used on Cook Mode completion) |
+| [`src/pages/`](src/pages/) | One HTML entry point per screen (about, login, register, add-recipe, edit-recipe, recipe-detail, cook-mode, admin, profile, favorites), most with a companion `.js` module — about, login, and register keep their (small) logic inline instead |
+| [`src/main.js`](src/main.js) | The home feed's script (`index.html` lives at the project root, so this is the one page module that sits outside `src/pages/`) — search/category filtering, mine-vs-public view scope, and the Random Recipe picker |
+| [`src/js/`](src/js/) | Shared low-level modules: `supabaseClient.js` (the single Supabase client instance), `categories.js`, `recipeForm.js`, `recipesView.js` (card/state HTML templates), `toast.js` (Bootstrap toast helper with a short sound cue, plus persisting a toast across a redirect), `formValidation.js` (shared HTML5 validation feedback — names, scrolls to, and focuses the first invalid field on every form), `scrollPosition.js` (remembers and restores a page's scroll position across a navigate-away-and-back round trip), `scrollReveal.js` (fade/slide-in cards via IntersectionObserver as they scroll into view), `countUp.js` (animates a stat counting up when it scrolls into view), `confetti.js` (dependency-free confetti burst, used on Cook Mode completion) |
 | [`src/services/`](src/services/) | Data-access layer, one file per Supabase resource (`auth.js`, `profiles.js`, `recipes.js`, `favorites.js`, `admin.js`, `avatarStorage.js`, `storage.js`) — the only layer that calls `supabase.from(...)` / `supabase.auth` directly |
 | [`src/components/`](src/components/) | Reusable UI fragments shared across pages: `navbar.js` (auth-aware nav, session/role rendering, account-status enforcement), `back-to-top.js` |
-| [`src/css/style.css`](src/css/style.css) | Custom styles layered on top of Bootstrap |
+| [`src/css/style.css`](src/css/style.css) | Entry stylesheet loaded by every page; imports [`src/styles/main.css`](src/styles/main.css), where the actual theme (colors, type, component overrides layered on top of Bootstrap) lives |
 | [`supabase/migrations/`](supabase/migrations/) | The database schema and its full history, as ordered SQL migrations — see [Database Schema](#database-schema) |
 | [`scripts/`](scripts/) | One-off Node scripts (e.g. seeding sample recipe images via the Supabase service-role key) — not part of the running app |
 | [`docs/`](docs/) | [`admin-setup.md`](docs/admin-setup.md) (bootstrapping the first admin) and [`database-schema.md`](docs/database-schema.md) (ER diagram and schema notes) |
 
 ## Live Demo
 
-- **URL:** _TODO: add the deployed Netlify URL_
-- **Demo account:** _TODO: add a seeded demo email/password_
-- **Admin demo account:** _TODO: add a seeded admin email/password, if one is provided for evaluation_
+- **URL:** [cook-log-recipes.netlify.app](https://cook-log-recipes.netlify.app/)
+- Demo/admin account credentials are not published here — they're shared
+  separately through the evaluation channel provided for this assignment.
